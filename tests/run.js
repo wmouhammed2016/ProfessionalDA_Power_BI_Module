@@ -146,8 +146,8 @@ function buildTestCopy() {
       await visit(`#/pbi/${unitId}/${s}`);
       const blocks = await page.evaluate(([id, s]) => { const T = window.__T, u = T.UNITS.find(x => x.id === id); return u.steps(T.uOf(id))[s - 1].blocks.map(b => ({ t: b.t, k: b.k, items: b.items && b.items.map(i => ({ v: i.v, ans: [].concat(i.ans)[0] })), ok: b.opts && b.opts.filter(o => o.ok).map(o => o.v)[0], answer: b.answer, nCards: b.cards && b.cards.length })); }, [unitId, s]);
       for (const b of blocks) {
-        if (b.t === 'single') await page.click(`[data-k="o-${b.k}-${b.ok}"]`, { force: true });
-        if (b.t === 'grid') for (const it of b.items) await page.click(`[data-k="g-${b.k}-${it.v}-${it.ans}"]`, { force: true });
+        if (b.t === 'single') await page.click(`label:has([data-k="o-${b.k}-${b.ok}"])`);
+        if (b.t === 'grid') for (const it of b.items) await page.click(`label:has([data-k="g-${b.k}-${it.v}-${it.ans}"])`);
         if (b.t === 'order') {
           for (let i = 0; i < b.answer.length; i++) {
             await page.click(`[data-k="card-${b.k}-${b.answer[i]}"]`);
