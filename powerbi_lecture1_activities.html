@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Power BI · Lecture 1 activities</title>
+<!-- Poppins is loaded from Google Fonts when online; the page falls back to system fonts when offline. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   THEME  (yellow family inspired by the Power BI logo, on a white page.
+   Hex values are approximations taken from public brand-colour listings, not an official guide.)
+   ========================================================================== */
+:root{
+  --bg:#FFFFFF;
+  --surface:#FFFFFF;
+  --canvas:#FAF7EC;       /* warm off-white for inner panels */
+  --ink:#1F1F1F;          /* charcoal */
+  --muted:#5B5B5B;
+  --line:#E6E0CC;
+  --yellow:#F2C811;       /* main yellow */
+  --yellow-d:#E3A810;     /* darker gold */
+  --yellow-dd:#7A5800;    /* dark amber: safe for small text on white */
+  --yellow-l:#F9E381;     /* light yellow */
+  --yellow-t:#FFF6CC;     /* tint */
+  --slate:#605E5C; --slate-t:#F3F2F1;
+  --green:#1E8E5A; --green-d:#166B43; --green-t:#E2F4EB;
+  --red-d:#B42318; --red-t:#FDECEA;
+  --radius:18px;
+  --shadow:0 1px 2px rgba(31,31,31,.08),0 8px 24px rgba(31,31,31,.07);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Poppins',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:1.0625rem;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{line-height:1.2;margin:0 0 .5em;font-weight:700;letter-spacing:-.01em}
+h1{font-size:clamp(1.7rem,4vw,2.4rem);font-weight:800}
+h2{font-size:1.45rem}
+h3{font-size:1.1rem}
+p{margin:0 0 .8em}
+a{color:var(--yellow-dd);font-weight:600}
+.muted{color:var(--muted)}
+.small{font-size:.9rem}
+:focus-visible{outline:3px solid var(--ink);outline-offset:2px;border-radius:6px}
+h1:focus,h2:focus{outline:none}
+.wrap{max-width:1060px;margin:0 auto;padding:0 16px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--ink);color:#fff;padding:8px 14px;border-radius:8px;z-index:100}
+.skip:focus{left:8px}
+
+/* Top bar */
+.top{background:var(--bg);border-bottom:4px solid var(--yellow);position:sticky;top:0;z-index:20}
+.top .wrap{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;padding-top:10px;padding-bottom:10px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.01em;text-decoration:none;color:var(--ink)}
+.brand .dots{display:inline-flex;align-items:flex-end;gap:3px;height:20px;flex:none}
+.brand .dots i{display:block;width:6px;border-radius:2px}
+.brand .dots i:nth-child(1){height:9px;background:var(--yellow-l)}
+.brand .dots i:nth-child(2){height:14px;background:var(--yellow)}
+.brand .dots i:nth-child(3){height:20px;background:var(--yellow-d)}
+.brand span.sub{font-weight:500;color:var(--muted);font-size:.85rem;margin-left:8px}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.timer{display:flex;align-items:center;gap:4px;background:var(--ink);color:#fff;border-radius:999px;padding:4px 6px 4px 14px;font-weight:600}
+.timer .t{font-variant-numeric:tabular-nums;font-size:1.05rem;min-width:3.4em}
+.timer button{background:rgba(255,255,255,.16);color:#fff;border:0;border-radius:999px;padding:5px 12px;font:inherit;font-size:.82rem;font-weight:600;cursor:pointer}
+.timer button:hover{background:rgba(255,255,255,.3)}
+.timer.warn{background:var(--yellow);color:var(--ink)}
+.timer.warn button{background:rgba(31,31,31,.14);color:var(--ink)}
+.timer.warn button:hover{background:rgba(31,31,31,.28)}
+.banner{background:var(--yellow);color:var(--ink);font-weight:600}
+.banner .wrap{display:flex;gap:12px;align-items:center;justify-content:space-between;padding-top:10px;padding-bottom:10px}
+
+/* Toolbar */
+.toolbar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:14px 0 6px;min-height:22px}
+.crumbs{font-size:.85rem;color:var(--muted)}
+.crumbs a{color:var(--muted);font-weight:500}
+.crumbs b{color:var(--ink);font-weight:600}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:2px solid var(--ink);background:var(--surface);color:var(--ink);font:inherit;font-weight:600;font-size:.95rem;padding:9px 18px;border-radius:999px;cursor:pointer;text-decoration:none;transition:transform .08s,background .15s}
+.btn:hover{background:var(--slate-t)}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--yellow);border-color:var(--ink);color:var(--ink)}
+.btn.primary:hover{background:var(--yellow-d)}
+.btn.danger{border-color:var(--red-d);color:var(--red-d)}
+.btn.danger:hover{background:var(--red-t)}
+.btn.ghost{border-color:var(--line);background:transparent}
+.btn.ghost:hover{background:var(--canvas)}
+.btn.sm{padding:5px 12px;font-size:.82rem}
+.btn[disabled],.btn[aria-disabled=true]{opacity:.45;cursor:not-allowed}
+.btn.fac-on{background:var(--yellow-t);border-color:var(--yellow-d);color:var(--ink)}
+
+/* Cards / layout */
+main{padding:6px 0 60px;outline:none}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px 24px;margin:0 0 18px}
+.grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(290px,1fr))}
+.grid .card{margin:0}
+.lead{font-size:1.08rem}
+.hero{padding:26px 0 8px;text-align:center}
+.hero .pill{display:inline-block;background:var(--yellow);border:3px solid var(--ink);border-radius:999px;padding:14px 44px;margin-bottom:12px}
+.hero .pill h1{margin:0}
+.hero p{color:var(--muted);margin:0}
+.chip{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;border-radius:999px;padding:2px 10px;background:var(--slate-t);color:var(--slate)}
+.chip.gold{background:var(--yellow-t);color:var(--yellow-dd);border:1px solid var(--yellow-d)}
+.chip.dark{background:var(--ink);color:#fff}
+.chip.green{background:var(--green-t);color:var(--green-d)}
+.bar{height:8px;background:var(--slate-t);border-radius:99px;overflow:hidden;margin:10px 0 6px}
+.bar>i{display:block;height:100%;background:var(--yellow-d);border-radius:99px;transition:width .3s}
+.case-card{display:flex;flex-direction:column;gap:6px}
+.case-card .ico{font-size:1.6rem}
+.case-card h3{margin:0}
+.case-card .foot{margin-top:auto;padding-top:10px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.howto{counter-reset:s;list-style:none;margin:0;padding:0;display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.howto li{counter-increment:s;display:flex;gap:12px;align-items:flex-start}
+.howto li::before{content:counter(s);flex:none;width:28px;height:28px;border-radius:50%;background:var(--yellow);border:2px solid var(--ink);color:var(--ink);font-weight:700;font-size:.85rem;display:grid;place-items:center}
+.callout{border-left:6px solid var(--ink);background:var(--slate-t);border-radius:12px;padding:12px 16px}
+.callout.gold{border-color:var(--yellow-d);background:var(--yellow-t)}
+.callout.green{border-color:var(--green);background:var(--green-t)}
+.field{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+input[type=text],textarea{font:inherit;border:2px solid var(--line);border-radius:12px;padding:9px 14px;background:#fff;color:var(--ink);width:100%}
+input[type=text]:focus,textarea:focus{border-color:var(--ink);outline:none}
+.field input[type=text]{max-width:340px}
+textarea{min-height:84px;resize:vertical}
+.tlabel{display:block;margin-bottom:8px}
+
+/* Stepper */
+.stepper{list-style:none;display:flex;gap:6px;padding:0;margin:0 0 16px;overflow-x:auto}
+.stepper li{flex:1 0 auto}
+.stepper a{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:var(--surface);border:2px solid var(--line);text-decoration:none;color:var(--ink);font-size:.82rem;font-weight:600;white-space:nowrap}
+.stepper a .n{width:22px;height:22px;border-radius:50%;background:var(--slate-t);display:grid;place-items:center;font-size:.75rem}
+.stepper a.done .n{background:var(--green);color:#fff}
+.stepper a[aria-current=step]{border-color:var(--ink);background:var(--yellow-t)}
+.stepper a[aria-current=step] .n{background:var(--yellow);color:var(--ink);border:2px solid var(--ink)}
+.stepnav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:8px;flex-wrap:wrap}
+
+/* Options */
+.opts{display:grid;gap:10px;margin:14px 0}
+.opt{display:flex;gap:12px;align-items:flex-start;background:#fff;border:2px solid var(--line);border-radius:14px;padding:13px 16px;cursor:pointer}
+.opt:hover{border-color:var(--yellow-d)}
+.opt.on{border-color:var(--ink);background:var(--yellow-t)}
+.opt.dis{opacity:.5;cursor:not-allowed}
+.opt input{margin-top:5px;accent-color:var(--ink);width:18px;height:18px;flex:none}
+.opt:focus-within{outline:3px solid var(--ink);outline-offset:2px}
+.roles{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.rpill{display:inline-flex}
+.rpill input{position:absolute;opacity:0;width:1px;height:1px}
+.rpill span{border:2px solid var(--line);border-radius:999px;padding:5px 14px;font-size:.88rem;font-weight:500;cursor:pointer;background:#fff}
+.rpill:hover span{border-color:var(--yellow-d)}
+.rpill input:checked+span{background:var(--yellow);border-color:var(--ink);color:var(--ink);font-weight:700}
+.rpill input:focus-visible+span{outline:3px solid var(--ink);outline-offset:2px}
+
+/* Results */
+.locked{text-align:center;padding:30px 24px}
+.locked .big{font-size:2.6rem;margin-bottom:4px}
+.score{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.score .num{font-size:3.4rem;font-weight:800;line-height:1;color:var(--ink);background:linear-gradient(transparent 62%,var(--yellow) 62%)}
+.score .num small{font-size:1.2rem;color:var(--muted);font-weight:600}
+table.tbl{width:100%;border-collapse:collapse;font-size:.95rem}
+table.tbl th,table.tbl td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+table.tbl td.r,table.tbl th.r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+table.tbl tr.total td{font-weight:800;border-top:2px solid var(--ink);border-bottom:0}
+.rev{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:10px}
+.rev li{border:2px solid var(--line);border-radius:14px;padding:12px 16px;background:#fff}
+.rev li.best{border-color:var(--green);background:var(--green-t)}
+.rev li.mine.wrong{border-color:var(--red-d);background:var(--red-t)}
+.rev p{margin:0 0 4px}
+.rev .why{font-size:.9rem;color:var(--muted)}
+.rev-h{display:flex;gap:6px;margin-bottom:4px;min-height:0}
+.badge{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;border-radius:999px;padding:2px 10px}
+.badge.good{background:var(--green);color:#fff}
+.badge.you{background:var(--ink);color:#fff}
+.mark{font-weight:700}
+.mark.ok{color:var(--green-d)}
+.mark.bad{color:var(--red-d)}
+ul.plain{margin:0;padding-left:20px}
+ul.plain li{margin:4px 0}
+
+/* Sort cards (grid block) */
+.deck{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));margin:14px 0 20px}
+.gridlist{display:grid;gap:12px;margin:14px 0 20px}
+.kcard{background:#fff;border:2px solid var(--ink);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:12px;justify-content:space-between;box-shadow:4px 4px 0 var(--ink)}
+.kcard.done{box-shadow:4px 4px 0 var(--yellow-d);background:var(--yellow-t)}
+.kcard .kt{font-weight:600;line-height:1.4}
+.gridlist .kcard{box-shadow:none}
+
+/* Info cards */
+.prodgrid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));margin:12px 0}
+.prod{background:#fff;border:2px solid var(--ink);border-radius:16px;padding:12px 16px;display:flex;flex-direction:column;gap:4px;box-shadow:4px 4px 0 var(--yellow-d)}
+.prod span{font-size:.92rem;color:var(--muted)}
+.prod .pi{font-size:1.7rem;line-height:1}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0;font-weight:600}
+.flow .fc{background:var(--yellow-t);border:2px solid var(--ink);border-radius:12px;padding:4px 12px;font-size:.92rem}
+.probgrid{display:grid;gap:8px 18px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));margin:8px 0 0;padding:0;list-style:none}
+.probgrid li{padding-left:22px;position:relative;font-size:.95rem}
+.probgrid li::before{content:'✗';position:absolute;left:0;color:var(--red-d);font-weight:800}
+
+/* The pipeline card game */
+.game{padding:18px}
+.track{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin:10px 0 6px}
+.endcap{font-weight:700;font-size:.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.oslot{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:96px;border:3px dashed var(--line);border-radius:16px;background:var(--canvas);font:inherit;color:var(--muted);cursor:pointer;padding:8px;text-align:center}
+.oslot:hover{border-color:var(--yellow-d)}
+.oslot .onum{width:28px;height:28px;border-radius:50%;background:#fff;border:2px solid var(--line);display:grid;place-items:center;font-weight:800;font-size:.85rem;color:var(--ink)}
+.oslot.filled{border-style:solid;border-color:var(--ink);background:var(--yellow);color:var(--ink);box-shadow:4px 4px 0 var(--ink);font-weight:700}
+.oslot.filled .onum{border-color:var(--ink)}
+.oslot.target{border-color:var(--ink);background:var(--yellow-t)}
+.hand{display:flex;flex-wrap:wrap;gap:12px;margin:14px 0 4px;padding:14px;background:var(--canvas);border-radius:14px;min-height:84px;align-items:center}
+.hand .empty{color:var(--muted)}
+.pk{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--ink);border-radius:14px;padding:12px 16px;font:inherit;font-weight:700;cursor:pointer;box-shadow:4px 4px 0 var(--ink);color:var(--ink)}
+.pk .pi{font-size:1.4rem;line-height:1}
+.pk:hover{background:var(--yellow-t)}
+.pk.sel{background:var(--yellow);box-shadow:4px 4px 0 var(--yellow-dd);transform:translateY(-3px)}
+
+/* Pipeline map */
+.mapcard{padding:14px 14px 18px}
+.mapcard svg{width:100%;height:auto;display:block;background:var(--canvas);border:2px dashed var(--line);border-radius:14px}
+.trail{fill:none;stroke:var(--ink);stroke-width:5;stroke-dasharray:1 13;stroke-linecap:round}
+.stop{cursor:pointer;outline:none}
+.stop circle{fill:#fff;stroke:var(--ink);stroke-width:4}
+.stop:hover circle{fill:var(--yellow-t)}
+.stop.on circle{fill:var(--yellow);stroke:var(--ink)}
+.stop:focus-visible circle{stroke-width:8}
+.stop .num{font-size:26px;font-weight:800;fill:var(--ink)}
+.stop .lbl{font-size:15px;font-weight:600;fill:var(--ink)}
+.bdg.back{fill:var(--slate-t);stroke:var(--slate);stroke-width:2}
+.bdg.front{fill:var(--yellow-l);stroke:var(--yellow-dd);stroke-width:2}
+.bt{font-size:10.5px;font-weight:700;fill:var(--ink);letter-spacing:.03em}
+.endlbl{font-size:15px;font-weight:700;fill:var(--muted)}
+.maplegend{display:flex;gap:18px;flex-wrap:wrap;font-size:.85rem;color:var(--muted);margin:10px 4px}
+.bdg-key{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:4px}
+.bdg-key.back{background:var(--slate-t);border:2px solid var(--slate)}
+.bdg-key.front{background:var(--yellow-l);border:2px solid var(--yellow-dd)}
+.stagepanel{background:#fff;border:2px solid var(--line);border-radius:14px;padding:14px 18px;margin-top:6px}
+.stagepanel h3{margin-bottom:6px}
+
+/* Agenda + wrap-up */
+.hubnav{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:18px 0 8px}
+.twotone{position:relative;display:grid;grid-template-columns:1fr 1fr;min-height:150px;border:3px solid var(--ink);border-radius:26px;overflow:hidden;margin-top:6px}
+.tt-left{background:var(--yellow)}.tt-right{background:var(--ink)}
+.tt-pill{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;border:3px solid var(--ink);border-radius:999px;padding:14px 44px;max-width:92%;text-align:center}
+.tt-pill h1{margin:0;font-size:clamp(1.5rem,4vw,2.3rem)}
+.tt-sub{text-align:center;color:var(--muted);margin:14px 0 18px}
+.progresscard{padding:20px 24px}
+.ring{position:relative;width:128px;height:128px;flex:none}
+.ring svg{width:100%;height:100%;display:block}
+.rbg{fill:none;stroke:var(--slate-t);stroke-width:14}
+.rfg{fill:none;stroke:var(--yellow-d);stroke-width:14;stroke-linecap:round;transition:stroke-dasharray .5s}
+.rtxt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05}
+.rtxt strong{font-size:2.1rem;font-weight:800}.rtxt span{font-size:.8rem;color:var(--muted)}
+.objgrid,.takegrid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));margin-top:10px}
+.obj,.take{border-radius:20px;padding:16px 18px;border:2px solid var(--ink);box-shadow:4px 4px 0 var(--ink);background:#fff}
+.obj h3,.take h3{margin:6px 0 4px}.obj p,.take p{margin:0;font-size:.93rem;color:var(--muted)}
+.oi,.ti{font-size:1.9rem;line-height:1}
+.o0,.t0{background:var(--yellow-t)}.o1,.t1{background:var(--yellow-l)}.o2,.t2{background:var(--canvas)}
+.timeline{list-style:none;margin:16px 0 20px;padding:0;position:relative}
+.timeline::before{content:'';position:absolute;left:28px;top:14px;bottom:14px;width:4px;background:repeating-linear-gradient(to bottom,var(--ink) 0 3px,transparent 3px 13px);opacity:.35}
+.tstop{position:relative;display:flex;gap:16px;align-items:flex-start;margin:0 0 16px}
+.node{flex:none;width:60px;height:60px;border-radius:50%;display:grid;place-items:center;font-size:1.6rem;border:4px solid var(--ink);background:#fff;position:relative;z-index:1}
+.node.n0{background:var(--yellow-t)}.node.n1{background:var(--yellow-l)}.node.n2{background:var(--canvas)}
+.node.brk{background:var(--yellow-l)}
+.stopcard{flex:1;margin:0;min-width:0}
+.stopcard.live{background:var(--canvas)}
+.stophead{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.stophead h3{margin:0}
+.stopnum{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--yellow-dd)}
+.stoplinks{margin-top:12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.checklist{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.chk{display:flex;gap:14px;align-items:flex-start;border:2px solid var(--line);border-radius:14px;padding:12px 16px;cursor:pointer;background:#fff}
+.chk input{margin-top:5px;width:20px;height:20px;accent-color:var(--ink);flex:none}
+.chk.on{border-color:var(--green);background:var(--green-t)}
+.chk:focus-within{outline:3px solid var(--ink);outline-offset:2px}
+.reslist{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.reslist h4{margin:0 0 4px;color:var(--yellow-dd)}
+@media (max-width:640px){.tt-pill{padding:10px 22px}.node{width:46px;height:46px;font-size:1.2rem}.timeline::before{left:21px}}
+
+/* Modal & toast */
+.modal-back{position:fixed;inset:0;background:rgba(31,31,31,.55);display:grid;place-items:center;padding:16px;z-index:50}
+.modal{background:#fff;border-radius:var(--radius);padding:24px;max-width:520px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);max-height:90vh;overflow:auto}
+.modal h2{margin-bottom:.4em}
+.modal .actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:18px}
+.modal .row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 20px;border-radius:999px;font-weight:600;font-size:.9rem;z-index:60}
+.err{color:var(--red-d);font-weight:600;font-size:.9rem;min-height:1.4em}
+footer{padding:0 0 40px;color:var(--muted);font-size:.8rem;text-align:center}
+@media (max-width:640px){.card{padding:18px 16px}.brand span.sub{display:none}.hero .pill{padding:12px 24px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#/" aria-label="Professional Data Analyst, Power BI – home"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span>Professional Data Analyst</span><span class="sub">Power BI · Lecture 1</span></a>
+    <div class="controls" id="controls"></div>
+  </div>
+</header>
+<div id="banner"></div>
+
+<div class="wrap">
+  <nav class="toolbar" id="toolbar" aria-label="Breadcrumb"></nav>
+  <main id="main" tabindex="-1"><noscript>This activity needs JavaScript. Please open it in a modern browser.</noscript></main>
+  <footer><span id="saved" role="status"></span></footer>
+</div>
+<div id="modal-root"></div>
+<div id="toast-root" aria-live="polite"></div>
+
+<script>
+(function () {
+'use strict';
+
+/* ==========================================================================
+   CONFIG
+   ========================================================================== */
+const FACILITATOR_PIN = 'insight';          // light guard so students don't reveal answers by accident
+const STORE_KEY = 'pbi-l1:v1';
+const COURSE = 'Professional Data Analyst';
+const LECTURE = 'Power BI · Lecture 1';
+
+/* ==========================================================================
+   HELPERS
+   ========================================================================== */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+const fmt = s => String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const range = n => Array.from({ length: n }, (_, i) => i);
+const O = (v, t, ok, why) => ({ v, t, ok: !!ok, why: why || '' });   // option
+const G = (v, t, ans, why) => ({ v, t, ans, why: why || '' });       // grid item
+
+/* ==========================================================================
+   STATE + PERSISTENCE (localStorage, with graceful fallback)
+   ========================================================================== */
+let storageOk = true;
+function readStore() { try { const r = localStorage.getItem(STORE_KEY); return r ? JSON.parse(r) : null; } catch (e) { storageOk = false; return null; } }
+function defaults() { return { v: 1, team: '', timer: { duration: 600, endsAt: null, left: null, done: false }, units: {}, wrap: { checks: {}, notes: {} } }; }
+let state = defaults();
+(function init() {
+  const loaded = readStore();
+  if (loaded && loaded.v === 1) { state = Object.assign(defaults(), loaded); state.timer = Object.assign(defaults().timer, loaded.timer || {}); }
+})();
+let saveTimer = null;
+function save() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); storageOk = true; } catch (e) { storageOk = false; }
+  paintSaved();
+  return storageOk;
+}
+function saveSoon() { clearTimeout(saveTimer); saveTimer = setTimeout(save, 350); }
+function paintSaved() {
+  const el = $('#saved');
+  el.textContent = storageOk ? '✓ Progress is saved automatically in this browser.' : '⚠ This browser is blocking storage, so progress will be lost when the tab closes.';
+}
+
+/* UI-only (not persisted) state */
+const ui = { fac: false, bannerHidden: false, mapStop: null, sel: null };
+try { ui.fac = sessionStorage.getItem('pbi:fac') === '1'; } catch (e) {}
+
+/* ==========================================================================
+   TIMER
+   ========================================================================== */
+const T = () => state.timer;
+function remaining() { return T().endsAt ? Math.max(0, Math.ceil((T().endsAt - Date.now()) / 1000)) : (T().left == null ? T().duration : T().left); }
+const running = () => !!T().endsAt;
+function timerToggle() {
+  if (running()) { T().left = remaining(); T().endsAt = null; }
+  else { let l = T().left == null ? T().duration : T().left; if (l <= 0) l = T().duration; T().endsAt = Date.now() + l * 1000; T().done = false; ui.bannerHidden = false; }
+  save(); paintControls(); paintBanner();
+}
+function timerReset() { T().endsAt = null; T().left = null; T().done = false; save(); paintControls(); paintBanner(); }
+function timerSetMinutes(m) { T().duration = m * 60; timerReset(); }
+function tick() {
+  const el = $('#tval'); if (!el) return;
+  const r = remaining();
+  if (running() && r === 0) { T().endsAt = null; T().left = 0; T().done = true; ui.bannerHidden = false; save(); paintControls(); paintBanner(); return; }
+  el.textContent = fmt(r);
+  const box = $('#timerbox'); if (box) box.classList.toggle('warn', (running() && r <= 60) || T().done);
+}
+setInterval(tick, 1000);
+
+/* ==========================================================================
+   CHROME (header controls, banner, toolbar), modals, toast
+   ========================================================================== */
+function paintControls() {
+  const r = remaining();
+  $('#controls').innerHTML =
+    `<div class="timer ${(running() && r <= 60) || T().done ? 'warn' : ''}" id="timerbox" role="group" aria-label="Team timer">
+       <span class="t" id="tval">${fmt(r)}</span>
+       <button data-act="timer-toggle" data-k="tt">${running() ? 'Pause' : 'Start'}</button>
+       <button data-act="timer-set" data-k="ts">Set</button>
+     </div>
+     <button class="btn sm ${ui.fac ? 'fac-on' : 'ghost'}" data-act="fac" data-k="fac" aria-pressed="${ui.fac}">${ui.fac ? '🔓 Facilitator on' : '🔒 Facilitator'}</button>
+     <button class="btn sm ghost" data-act="data" data-k="data">Data</button>`;
+}
+function paintBanner() {
+  $('#banner').innerHTML = T().done && !ui.bannerHidden
+    ? `<div class="banner" role="alert"><div class="wrap"><span>⏰ Time’s up! Finish your last answer and head back to the main room.</span><button class="btn sm" data-act="dismiss-banner">Dismiss</button></div></div>` : '';
+}
+function paintToolbar(r) {
+  const home = `<a href="#/">Activities</a>`;
+  if (r.name === 'hub') { $('#toolbar').innerHTML = ''; return; }
+  if (r.name === 'agenda' || r.name === 'wrap') { $('#toolbar').innerHTML = `<a class="btn sm ghost" href="#/">← Back to activities</a><span class="crumbs">${home} / <b>${r.name === 'agenda' ? 'Agenda' : 'Wrap-up'}</b></span>`; return; }
+  const L = LABS[r.lab], lab = `<a href="${L.hash}">${esc(L.title)}</a>`;
+  $('#toolbar').innerHTML = r.menu
+    ? `<a class="btn sm ghost" href="#/">← Back to activities</a><span class="crumbs">${home} / <b>${esc(L.title)}</b></span>`
+    : `<a class="btn sm ghost" href="${L.hash}">← Back to ${esc(L.title)}</a><span class="crumbs">${home} / ${lab} / <b>${esc(r.unit.title)}</b>${r.step === 'results' ? ' / <b>Results</b>' : ''}</span>`;
+}
+let lastFocus = null;
+function openModal(html) {
+  lastFocus = document.activeElement;
+  $('#modal-root').innerHTML = `<div class="modal-back" data-act="modal-bg"><div class="modal" role="dialog" aria-modal="true">${html}</div></div>`;
+  const f = $('#modal-root').querySelector('input,button,textarea'); if (f) f.focus();
+}
+function closeModal() { $('#modal-root').innerHTML = ''; if (lastFocus && document.contains(lastFocus)) lastFocus.focus(); }
+function confirmModal(title, body, okLabel, onOk, danger) {
+  openModal(`<h2>${esc(title)}</h2><div>${body}</div><div class="actions"><button class="btn ghost" data-act="modal-close">Cancel</button><button class="btn ${danger ? 'danger' : 'primary'}" data-act="modal-ok">${esc(okLabel)}</button></div>`);
+  confirmModal.cb = onOk;
+}
+function toast(msg) {
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; $('#toast-root').appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+async function copyText(t) {
+  try { await navigator.clipboard.writeText(t); toast('Copied to clipboard'); }
+  catch (e) { const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); toast('Copied to clipboard'); } catch (e2) { toast('Copy failed'); } a.remove(); }
+}
+
+/* ==========================================================================
+   CONTENT: the Power BI ecosystem
+   Sources: the instructor-supplied transcript of the video "What Is Power BI? The Full Story Visually Explained".
+   Scenarios, task cards and wording of the questions were written for this course.
+   ========================================================================== */
+const SOURCE_NOTE = `<p class="muted small" style="margin:10px 0 0">Based on the course video transcript. The practice scenarios are written for this course. Product facts are the video’s statements: your facilitator verifies them before teaching.</p>`;
+
+/* The five components, in the order of the build */
+const STAGES = [
+  { n: 1, v: 'pq', name: 'Power Query', icon: '🧹', lines: ['Power', 'Query'], side: 'back', tag: 'Clean',
+    job: 'Clean up your data. Remove mistakes and duplicates and fix the formats, so the data is prepared for the next step.' },
+  { n: 2, v: 'dm', name: 'Data model', icon: '🧱', lines: ['Data', 'model'], side: 'back', tag: 'Organise',
+    job: 'Structure and organise the data: connect your tables to each other. This keeps everything accurate, organised and fast.' },
+  { n: 3, v: 'dx', name: 'DAX', icon: '🧮', lines: ['DAX', ''], side: 'back', tag: 'Calculate',
+    job: 'Use calculations and math to build the business logic you will need for the visuals.' },
+  { n: 4, v: 'vz', name: 'Visuals', icon: '📊', lines: ['Visuals', ''], side: 'front', tag: 'Show',
+    job: 'The first time you build something the end user sees: charts, big numbers, tables and filters, to tell a story with the data.' },
+  { n: 5, v: 'sh', name: 'Share & publish', icon: '🚀', lines: ['Share &', 'publish'], side: 'front', tag: 'Share',
+    job: 'Publish what you have built, so people can view the report, interact with it and make decisions.' }
+];
+const STAGE_CHOICES = STAGES.map(s => ({ v: s.v, l: s.n + ' · ' + s.name }));
+
+/* ---- Pipeline map (SVG) ----------------------------------------------------- */
+function mapHtml() {
+  const sel = ui.mapStop, P = [[130, 220], [320, 100], [510, 220], [700, 100], [890, 220]];
+  const stops = STAGES.map((s, i) => {
+    const [x, y] = P[i], on = sel === i;
+    const lbl = s.side === 'front' ? ['WHAT USERS SEE', 140, 'front'] : ['BEHIND THE SCENES', 160, 'back'];
+    const bx = x - lbl[1] / 2;
+    return `<g class="stop ${on ? 'on' : ''}" role="button" tabindex="0" data-act="pbi-stop" data-i="${i}" data-k="stop-${i}" aria-pressed="${on}" aria-label="Component ${s.n}: ${esc(s.name)}">
+      <rect class="hit" x="${x - 76}" y="${y - 42}" width="152" height="162" fill="transparent"/><circle cx="${x}" cy="${y}" r="32"/><text class="num" x="${x}" y="${y + 9}" text-anchor="middle">${s.n}</text>
+      <text class="lbl" x="${x}" y="${y + 58}" text-anchor="middle">${esc(s.lines[0])}</text><text class="lbl" x="${x}" y="${y + 76}" text-anchor="middle">${esc(s.lines[1])}</text>
+      <rect class="bdg ${lbl[2]}" x="${bx}" y="${y + 86}" width="${lbl[1]}" height="20" rx="10"/><text class="bt" x="${x}" y="${y + 100}" text-anchor="middle">${lbl[0]}</text></g>`;
+  }).join('');
+  const s = sel != null ? STAGES[sel] : null;
+  const panel = s
+    ? `<div class="stagepanel"><h3>${s.icon} ${s.n} · ${esc(s.name)}</h3><p style="margin:0">${esc(s.job)}</p></div>`
+    : `<div class="stagepanel muted">👆 Tap a numbered stop on the map to see what each component does.</div>`;
+  return `<div class="card mapcard"><svg viewBox="0 40 1000 360" role="group" aria-label="The five components of Power BI, in order" xmlns="http://www.w3.org/2000/svg">
+      <path class="trail" d="M130,220 C200,80 260,70 320,100 C400,140 440,220 510,220 C580,220 630,70 700,100 C780,130 830,210 890,220"/>
+      <text class="endlbl" x="40" y="382">📥 Your data comes in</text><text class="endlbl" x="960" y="382" text-anchor="end">Decisions get made ✅</text>${stops}</svg>
+    <div class="maplegend"><span><i class="bdg-key back"></i> Hidden from the end user</span><span><i class="bdg-key front"></i> Seen by the end user</span></div>${panel}</div>`;
+}
+
+/* ---- Units ---------------------------------------------------------------------- */
+const LABS = {
+  pbi: { id: 'pbi', hash: '#/pbi', title: 'Power BI Ecosystem Lab', word: 'Station', stations: [
+    { n: 1, title: 'The big picture' }, { n: 2, title: 'The pipeline card game' }, { n: 3, title: 'Desktop, Service and Mobile' },
+    { n: 4, title: 'Is Power BI the right fit?' }, { n: 5, title: 'Lecture checkpoint' }],
+    intro: () => `<p class="lead">Before you build anything, see the <strong>whole picture</strong>: why companies moved from spreadsheets to Business Intelligence, how a Power BI project flows from raw data to decisions, and which Power BI tool does which job.</p>
+      <ol class="howto"><li><span><strong>Why BI?</strong> What goes wrong with spreadsheets, and what BI is.</span></li><li><span><strong>Card game:</strong> deal the five components into the right order, then place the tasks.</span></li><li><span><strong>Ecosystem:</strong> Desktop, the online service and the mobile app.</span></li><li><span><strong>Fit check:</strong> an optional discussion on where Power BI fits.</span></li><li><span><strong>Checkpoint:</strong> five quick questions.</span></li></ol>
+      <div class="callout" style="margin-top:16px"><strong>Team play:</strong> one person shares their screen and drives, everyone discusses. Answers are revealed together in the main room. The practice scenarios are written for this course; the product facts come from the course video.</div>` }
+};
+
+const U = (id, st, icon, title, tagline, stage, steps, prompts, fac, extra) => Object.assign({ id, lab: 'pbi', station: st, icon, title, tagline, stage, steps, prompts, fac }, extra || {});
+
+const PROBLEMS = [
+  { v: 'man', l: 'Manual work' }, { v: 'stale', l: 'Outdated, static data' }, { v: 'vers', l: 'Many versions' }, { v: 'sec', l: 'Weak security' },
+  { v: 'rls', l: 'No row-level control' }, { v: 'size', l: 'Too much data' }, { v: 'truth', l: 'No single source of truth' }, { v: 'mod', l: 'Modern data sources' }
+];
+
+const UNITS = [
+/* ================================================================ STATION 1 */
+U('p1', 1, '📉', 'Why Business Intelligence?', 'Spot what goes wrong when analysis lives in spreadsheets, and what BI is.', 'The big picture', () => [
+  { label: 'The spreadsheet story', blocks: [{ t: 'html', html: `<p class="lead">Managers need answers fast: <em>which region is falling behind? why are profits dropping? where should we invest next?</em> Without good data they guess. So the company hires an analyst, who often starts in spreadsheets.</p>
+    <div class="card"><h3>Where spreadsheet analysis falls apart</h3><ul class="probgrid">
+      <li><strong>Manual work:</strong> connecting sources, exporting, merging and cleaning by hand</li><li><strong>Old, static data:</strong> a snapshot that does not update itself</li>
+      <li><strong>Modern sources:</strong> cloud systems, APIs and streams are hard to pull in by hand</li><li><strong>Too much data:</strong> big files freeze or crash</li>
+      <li><strong>Many versions:</strong> analysts cannot work in the same file at once</li><li><strong>Weak security:</strong> files travel by email with sensitive data</li>
+      <li><strong>No row-level control:</strong> you cannot limit who sees which rows</li><li><strong>No single source of truth:</strong> three analysts, three answers</li></ul></div>
+    <div class="card callout gold"><h3>Business Intelligence (BI)</h3><p style="margin:0">BI is the <strong>whole process of working with data</strong>: collecting it from the sources, cleaning and preparing it, organising it, and turning it into visuals so people can understand it and make better decisions. Power BI and Tableau are two well-known BI platforms.</p></div>${SOURCE_NOTE}` }] },
+  { label: 'Name the problem', blocks: [
+    { t: 'grid', k: 'prob', pts: 70, cards: true, prompt: 'Which spreadsheet problem does each situation show?', choices: PROBLEMS, items: [
+      G('a1', 'Every Monday an analyst exports files from three systems, merges the sheets and cleans the rows by hand.', 'man', 'The whole process is manual, slow and painful.'),
+      G('a2', 'The monthly report reaches managers three weeks after the data was exported, and sales have changed since.', 'stale', 'A spreadsheet is a snapshot: it does not update when new data arrives.'),
+      G('a3', 'Three analysts each edit their own copy of the workbook and nobody knows which is current.', 'vers', 'People cannot work in one file at the same time, so copies multiply.'),
+      G('a4', 'A workbook full of sensitive company figures is emailed outside the company by mistake.', 'sec', 'Files sent by email can easily end up in the wrong hands.'),
+      G('a5', 'Only senior managers should see salary rows, but everyone with the file sees every sheet.', 'rls', 'Spreadsheets cannot limit which people see which rows, so teams make several versions.'),
+      G('a6', 'The workbook freezes when the team tries to load millions of rows.', 'size', 'Spreadsheets cannot handle big data well.'),
+      G('a7', 'Sales and finance each report a different revenue for last month.', 'truth', 'Different files, different dates and different formulas: there is no single point of truth.'),
+      G('a8', 'The company’s data sits in a cloud application that exposes an API, and copying it by hand is impractical.', 'mod', 'Modern systems live in the cloud and provide data through APIs or streams.')] }] },
+  { label: 'What is BI?', blocks: [
+    { t: 'single', k: 'q1', pts: 15, prompt: 'Which statement about Business Intelligence is the best?', opts: [
+      O('a', 'It is the full workflow: collect, clean, organise and visualise data so people can decide', 1, 'BI covers the process from start to finish.'),
+      O('b', 'It is only making charts and dashboards', 0, 'Charts are the visible end of a longer process.'),
+      O('c', 'It is a spreadsheet add-in', 0, 'BI platforms replace the manual spreadsheet process.'),
+      O('d', 'It is a type of database', 0, 'A database is one possible data source.')] },
+    { t: 'single', k: 'q2', pts: 15, prompt: 'Where did the ideas behind Power BI start?', opts: [
+      O('a', 'In Excel, with tools such as Power Query and Power Pivot', 1, 'Microsoft took the strong parts of Excel and turned them into products for data analysis.'),
+      O('b', 'In a database product', 0, 'The video traces it back to Excel.'),
+      O('c', 'In a programming language', 0, 'The video traces it back to Excel.'),
+      O('d', 'In a web browser', 0, 'The video traces it back to Excel.')] }] }
+], ['Which of the eight problems have you seen in a real workplace?', 'Which problem would cost a company the most?', 'Why is “BI is more than charts” an important point for an analyst?'],
+['The eight problems come from the course video. The situations in step 2 are practice examples written for this course.', 'If a team confuses weak security with no row-level control: security is about who gets the file, row-level control is about who sees which rows.']),
+
+/* ================================================================ STATION 2 */
+U('p2', 2, '🃏', 'The Pipeline Card Game', 'Deal the five components into order, then place the task cards where they belong.', 'The build, from data to decisions', () => [
+  { label: 'Meet the five components', blocks: [
+    { t: 'html', html: `<p class="lead">Everything you build in Power BI uses five components. The first three are the <strong>background</strong>: nobody sees them. Visuals are the first thing the end user sees.</p><div class="callout gold small"><strong>Read the stops, then play.</strong> Tap each numbered stop to see its job. You will need it in the next step, where the cards come without hints.</div>` },
+    { t: 'map' }] },
+  { label: 'Deal the pipeline', blocks: [
+    { t: 'html', html: `<div class="callout small" style="margin-bottom:12px"><strong>How to play:</strong> tap a card in your hand, then tap the numbered slot where it belongs. Tap a filled slot to take the card back.</div>` },
+    { t: 'order', k: 'flow', pts: 50, prompt: 'Deal the five components in the order you would use them to build a report.', cards: STAGES.map(s => ({ v: s.v, t: s.name, icon: s.icon, job: s.job })), answer: STAGES.map(s => s.v) }] },
+  { label: 'Place the task cards', blocks: [
+    { t: 'grid', k: 'task', pts: 50, cards: true, prompt: 'Which component does each task belong to?', choices: STAGE_CHOICES, items: [
+      G('t1', 'Remove duplicate customer rows', 'pq', 'Removing duplicates is cleaning: that is Power Query.'),
+      G('t2', 'Change a column of text dates so Power BI treats them as real dates', 'pq', 'Fixing formats is cleaning: that is Power Query.'),
+      G('t3', 'Link the Orders table to the Customers table through a shared customer ID', 'dm', 'Connecting tables to each other is the data model.'),
+      G('t4', 'Organise the tables so the report stays accurate and fast', 'dm', 'Structuring the tables is the data model.'),
+      G('t5', 'Write a calculation for profit margin that every chart can reuse', 'dx', 'Calculations and business logic are DAX.'),
+      G('t6', 'Calculate the average order value', 'dx', 'A calculation built on top of the data is DAX.'),
+      G('t7', 'Add a bar chart and a big number to a report page', 'vz', 'Charts and big numbers are visuals.'),
+      G('t8', 'Add filters so users can explore the data themselves', 'vz', 'Filters and interactivity are part of the visuals users see.'),
+      G('t9', 'Publish the finished report so managers can open it', 'sh', 'Publishing is how the report reaches its audience.'),
+      G('t10', 'Let colleagues view the report and interact with it to make decisions', 'sh', 'Sharing lets people view, interact and decide.')] }] }
+], ['Which component do you think takes the most time in a real project, and why?', 'Which component could you skip, and what would break?', 'Where does your own work today fit on the track?'],
+['The five components and their jobs come from the course video. The ten task cards are practice examples written for this course.', 'DAX sits between the model and the visuals: the video describes it as the business logic needed for the visuals.', 'Link back to the spreadsheet problems: each stage replaces one manual step.']),
+
+/* ================================================================ STATION 3 */
+U('p3', 3, '🧰', 'Desktop, Service or Mobile?', 'Which Power BI tool does which job, and what lives in a .pbix file.', 'Build, host and share, view', () => [
+  { label: 'Three tools, three jobs', blocks: [{ t: 'html', html: `<p class="lead">Power BI is not one thing. These are the three main tools in the ecosystem:</p>
+    <div class="flow" aria-hidden="true"><span class="fc">Build in Desktop</span><span>→</span><span class="fc">Publish to the Service</span><span>→</span><span class="fc">View on any device</span></div>
+    <div class="prodgrid">
+      <div class="prod"><span class="pi" aria-hidden="true">💻</span><strong>Power BI Desktop</strong><span>The app you install on your own PC, where you spend most of your time building: Power Query, the data model, DAX and visuals. It is Windows-only. Everything is stored in one local <code>.pbix</code> file.</span></div>
+      <div class="prod"><span class="pi" aria-hidden="true">☁️</span><strong>Power BI Service</strong><span>Where you publish your report. It lives there, and users open it in their browser to view, filter and interact.</span></div>
+      <div class="prod"><span class="pi" aria-hidden="true">📱</span><strong>Power BI mobile app</strong><span>For phones and tablets: people who do not have time to open a laptop connect to the same cloud reports.</span></div></div>
+    <p class="muted small">The video says there is more in the ecosystem, but these are the three major tools.</p>${SOURCE_NOTE}` }] },
+  { label: 'Which tool?', blocks: [
+    { t: 'grid', k: 'tool', pts: 60, cards: true, prompt: 'Which Power BI tool fits each situation?', choices: [{ v: 'desk', l: 'Desktop' }, { v: 'serv', l: 'Service' }, { v: 'mob', l: 'Mobile app' }], items: [
+      G('d1', 'An analyst cleans the data, builds the model and writes the DAX.', 'desk', 'Desktop is where you build.'),
+      G('d2', 'Colleagues open a published report in their browser and filter it.', 'serv', 'The Service hosts reports for users to view and interact with.'),
+      G('d3', 'A senior manager wants to check the same report on a tablet.', 'mob', 'The mobile app connects to the reports that live in the cloud.'),
+      G('d4', 'A student asks where to install the tool that builds reports. They use Windows.', 'desk', 'Desktop is installed locally on the PC (and is Windows-only).'),
+      G('d5', 'You publish the finished report so it lives in the cloud.', 'serv', 'Once published, the report lives in the Service.'),
+      G('d6', 'The data, the model and the report are saved together in one local file.', 'desk', 'Desktop saves everything in a single local file.'),
+      G('d7', 'A manager on the move interacts with the report on a phone.', 'mob', 'The mobile app lets people interact with reports on phones and tablets.'),
+      G('d8', 'The place where finished reports are hosted and shared with end users.', 'serv', 'Hosting and sharing is the job of the Service.')] }] },
+  { label: 'The .pbix file', blocks: [
+    { t: 'single', k: 'f1', pts: 20, prompt: 'What does the local .pbix file hold?', opts: [
+      O('a', 'The data, the model and the report, all in one file on your PC', 1, 'Everything from Desktop is stored in one single local file.'),
+      O('b', 'Only the charts', 0, 'It holds the data and the model as well.'),
+      O('c', 'Only a link to the cloud', 0, 'It is a real file on your PC.'),
+      O('d', 'Only the DAX formulas', 0, 'It holds the whole project.')] },
+    { t: 'single', k: 'f2', pts: 20, prompt: 'Why publish to the Service instead of emailing the .pbix file to everyone?', opts: [
+      O('a', 'Emailing copies brings back the spreadsheet problems: many versions and weak security', 1, 'Publishing gives people one place to view the report.'),
+      O('b', 'Because .pbix files cannot be emailed', 0, 'The file can be shared; the point is that it is a poor way to do it.'),
+      O('c', 'Because emailing makes the report faster', 0, 'It does not.'),
+      O('d', 'Because the Service is only for mobile phones', 0, 'The Service serves browsers as well.')] }] }
+], ['Which of the three tools will you use most, and which will your audience use?', 'What would go wrong if everyone shared .pbix files by email?', 'Who in your company would never open Desktop?'],
+['The three tools and the .pbix file come from the course video. The situations are practice examples written for this course.', 'The video says Desktop is Windows-only “unless you are using some extra workarounds”: ask Mac users how they plan to practise.']),
+
+/* ================================================================ STATION 4 (optional, unscored) */
+U('p4', 4, '⚖️', 'Is Power BI the right fit?', 'An optional team discussion: where Power BI is enough, and where another tool might be better.', 'Choosing the tool for the need', () => [
+  { label: 'What the video says', blocks: [{ t: 'html', html: `<p class="lead">The speaker likes both Power BI and Tableau, and used both in one project. These are <strong>his views</strong>, not a verdict.</p>
+    <div class="prodgrid">
+      <div class="prod"><strong>Reasons teams choose Power BI</strong><span>It fits Microsoft tools people already use · it looks familiar to Excel users · it costs less · Power Query is built in · monthly updates · strong data modelling</span></div>
+      <div class="prod"><strong>Where he sees limits</strong><span>Very complex or advanced visuals · a limit on points in scatter charts · Desktop does not run on a Mac</span></div>
+      <div class="prod"><strong>His rule of thumb</strong><span>Power BI for standard operational reports that go to managers, and Tableau for complex, advanced analytics for a focused audience</span></div></div>
+    <p class="muted small">Opinions and figures are the speaker’s. Check them before relying on them.</p>${SOURCE_NOTE}` }] },
+  { label: 'Your team’s view', blocks: [
+    { t: 'text', k: 'enough', prompt: 'Describe a reporting need, from your own work or an imagined company, where Power BI would be enough. Why?', ph: 'A report where Power BI is enough…' },
+    { t: 'text', k: 'other', prompt: 'Describe a need where you would consider another tool, or another approach. Why?', ph: 'A need where I would look elsewhere…' },
+    { t: 'text', k: 'who', prompt: 'Who would use the report, and on which device?', ph: 'The audience and their device…' }] }
+], ['Which of the speaker’s reasons matters most to your team?', 'What would you need to know before choosing a tool for a real company?', 'Did anyone disagree with the speaker, and why?'],
+['Optional and unscored: use it if time allows or as homework. Free text is shared for peer review.', 'Remind teams that the video’s comparisons are one practitioner’s view.'],
+{ noScore: true, optional: true, peer: ['Does it name a clear audience and a clear need?', 'Is the reason based on the need, not on a tool preference?', 'Would the answer change if the audience used phones?'] }),
+
+/* ================================================================ STATION 5 */
+U('p5', 5, '🧠', 'Lecture checkpoint', 'Five quick questions on what you have learned so far.', 'The whole lecture', () => {
+  const Q = (k, prompt, opts) => ({ t: 'single', k, pts: 20, prompt, opts });
+  return [{ label: 'Five questions', blocks: [
+    Q('q1', 'Which Power BI component cleans data: removes duplicates and mistakes and fixes formats?', [O('a', 'Power Query', 1, 'Power Query prepares the data.'), O('b', 'DAX', 0, 'DAX is for calculations and business logic.'), O('c', 'Visuals', 0, 'Visuals are what the end user sees.'), O('d', 'The mobile app', 0, 'The mobile app is for viewing reports.')]),
+    Q('q2', 'What is the data model for?', [O('a', 'Structuring and organising the data by connecting the tables, so results are accurate and fast', 1, 'This is the second component.'), O('b', 'Cleaning mistakes out of a column', 0, 'That is Power Query.'), O('c', 'Choosing chart colours', 0, 'That is part of the visuals.'), O('d', 'Emailing the report', 0, 'Sharing happens through publishing.')]),
+    Q('q3', 'What is DAX used for?', [O('a', 'Calculations and math that build the business logic', 1, 'DAX builds the logic the visuals need.'), O('b', 'Hosting reports in the cloud', 0, 'That is the Service.'), O('c', 'Installing Desktop', 0, 'Not what DAX does.'), O('d', 'Importing a file', 0, 'Not what DAX does.')]),
+    Q('q4', 'Where do end users usually open a published report in their browser?', [O('a', 'The Power BI Service', 1, 'Published reports live in the Service.'), O('b', 'Power BI Desktop', 0, 'Desktop is where you build.'), O('c', 'Excel only', 0, 'Not the video’s answer.'), O('d', 'A .pbix file on your desk', 0, 'The .pbix file is the local build file.')]),
+    Q('q5', 'Which statement about Power BI Desktop is true, according to the video?', [O('a', 'It is installed on a PC, is Windows-only, and stores the whole project in one .pbix file', 1, 'It is where most of the building happens.'), O('b', 'It runs only in a browser', 0, 'That describes the Service.'), O('c', 'It is only for phones and tablets', 0, 'That describes the mobile app.'), O('d', 'It cannot hold data', 0, 'The .pbix file includes the data.')])] }];
+}, ['Which question did your team debate the most?', 'Which topic from today do you want to revisit?', 'What would you add to this checkpoint?'],
+['Use wrong answers to decide what to revisit before moving on to connecting to data.', 'This checkpoint covers the ecosystem only. Questions for the rest of Lecture 1 will be added as its activities are built.'])
+];
+
+/* ==========================================================================
+   ENGINE: state per unit, progress, scoring
+   ========================================================================== */
+const labOf = un => LABS[un.lab];
+const labUnits = lab => UNITS.filter(x => x.lab === lab);
+const unitById = id => UNITS.find(x => x.id === id);
+function uOf(id) {
+  let u = state.units[id];
+  if (!u) u = state.units[id] = { a: {}, o: {}, vis: {}, step: 1, submitted: false, revealed: false };
+  if (!u.a) u.a = {}; if (!u.o) u.o = {}; if (!u.vis) u.vis = {};
+  return u;
+}
+function ord(u, key, n) { const cur = u.o[key]; if (cur && cur.length === n) return cur; return (u.o[key] = shuffle(range(n))); }
+const graded = b => ['single', 'multi', 'grid', 'order'].includes(b.t);
+function blockDone(b, u) {
+  const a = u.a[b.k];
+  switch (b.t) {
+    case 'single': return a != null;
+    case 'multi': return !!a && (b.pick ? a.length === b.pick : a.length > 0);
+    case 'grid': return !!a && b.items.every(it => a[it.v]);
+    case 'order': return !!a && a.length === b.cards.length && a.every(Boolean);
+  }
+  return true;
+}
+function stepDone(unit, u, idx) {
+  const st = unit.steps(u)[idx - 1]; if (!st) return false;
+  const g = st.blocks.filter(graded);
+  return g.length ? g.every(b => blockDone(b, u)) : !!u.vis[idx];
+}
+function unitProgress(unit) { const u = uOf(unit.id), n = unit.steps(u).length; let d = 0; for (let i = 1; i <= n; i++) if (stepDone(unit, u, i)) d++; return { d, n }; }
+function unitStatus(unit) { const u = uOf(unit.id); if (u.revealed) return 'revealed'; if (u.submitted) return 'submitted'; return unitProgress(unit).d > 0 ? 'progress' : 'new'; }
+function unitHref(unit) { const u = uOf(unit.id); return `${labOf(unit).hash}/${unit.id}/${u.submitted ? 'results' : (u.step || 1)}`; }
+
+const okAns = (it, v) => Array.isArray(it.ans) ? it.ans.includes(v) : v === it.ans;
+function blockGot(b, u) {
+  if (!b.pts) return 0;
+  const a = u.a[b.k]; if (a == null) return 0;
+  switch (b.t) {
+    case 'single': { const o = b.opts.find(x => x.v === a); return o && o.ok ? b.pts : 0; }
+    case 'multi': { const cor = b.opts.filter(o => o.ok).map(o => o.v); const right = a.filter(v => cor.includes(v)).length; return b.pts * Math.max(0, right - (a.length - right)) / Math.min(b.need || cor.length, cor.length); }
+    case 'grid': return b.pts * b.items.filter(it => okAns(it, a[it.v])).length / b.items.length;
+    case 'order': return b.pts * b.answer.filter((v, i) => a[i] === v).length / b.answer.length;
+  }
+  return 0;
+}
+function unitScore(unit, u) {
+  let got = 0, max = 0; const rows = [];
+  unit.steps(u).forEach(st => {
+    let g = 0, m = 0;
+    st.blocks.forEach(b => { if (!b.pts) return; g += blockGot(b, u); m += b.pts; });
+    if (m) rows.push({ label: st.label, g, m });
+    got += g; max += m;
+  });
+  return { rows, got, max, total: Math.min(100, Math.round(max ? got / max * 100 : 0)) };
+}
+const fp = x => Number.isInteger(x) ? String(x) : (Math.round(x * 10) / 10).toFixed(1);
+function labTotals(lab) { let got = 0, n = 0; labUnits(lab).forEach(un => { const u = uOf(un.id); if (u.revealed && !un.noScore) { got += unitScore(un, u).total; n++; } }); return { got, max: n * 100, n }; }
+
+/* ==========================================================================
+   PLAY + REVEAL BLOCKS
+   ========================================================================== */
+let currentUnit = null;
+function blockByKey(unit, k) { let f = null; unit.steps(uOf(unit.id)).forEach(st => st.blocks.forEach(b => { if (b.k === k) f = b; })); return f; }
+
+function orderHtml(b, u) {
+  const n = b.cards.length, placed = u.a[b.k] || Array(n).fill(null), used = placed.filter(Boolean);
+  const hand = ord(u, b.k, n).map(i => b.cards[i]).filter(c => !used.includes(c.v));
+  const sel = ui.sel && ui.sel.k === b.k ? ui.sel.v : null;
+  const slots = placed.map((v, i) => { const c = v && b.cards.find(x => x.v === v);
+    return `<button type="button" class="oslot ${c ? 'filled' : ''} ${sel && !c ? 'target' : ''}" data-act="pbi-slot" data-b="${b.k}" data-i="${i}" data-k="slot-${b.k}-${i}" aria-label="Position ${i + 1}: ${c ? esc(c.t) + '. Press to take the card back' : 'empty. Press to place the selected card'}">
+      <span class="onum" aria-hidden="true">${i + 1}</span><span>${c ? `<span aria-hidden="true">${c.icon}</span> ${esc(c.t)}` : 'Place a card'}</span></button>`; }).join('');
+  const cards = hand.map(c => `<button type="button" class="pk ${sel === c.v ? 'sel' : ''}" data-act="pbi-card" data-b="${b.k}" data-v="${c.v}" data-k="card-${b.k}-${c.v}" aria-pressed="${sel === c.v}"><span class="pi" aria-hidden="true">${c.icon}</span>${esc(c.t)}</button>`).join('');
+  return `<div class="card game"><h3>${esc(b.prompt)}</h3>
+    <div class="endcap"><span>📥 Data comes in</span><span>Decisions get made ✅</span></div>
+    <div class="track" role="group" aria-label="The pipeline, first to last">${slots}</div>
+    <div class="hand" role="group" aria-label="Your hand of cards" aria-live="polite">${cards || '<span class="empty">All cards are placed. Check the order, then go on.</span>'}</div>
+    <p class="muted small" style="margin:8px 0 0">${sel ? 'Card selected: now tap a numbered slot.' : 'Tap a card to pick it up.'} Placed: ${used.length} of ${n}.</p></div>`;
+}
+
+function blkPlay(b, u) {
+  switch (b.t) {
+    case 'html': return typeof b.html === 'function' ? b.html.call(currentUnit) : b.html;
+    case 'map': return mapHtml();
+    case 'order': return orderHtml(b, u);
+    case 'text': return `<div class="card"><label class="tlabel" for="t-${b.k}"><strong>${esc(b.prompt)}</strong></label><textarea id="t-${b.k}" data-kf="${b.k}" data-kt="text" placeholder="${esc(b.ph || '')}">${esc(u.a[b.k] || '')}</textarea></div>`;
+    case 'single': {
+      const sel = u.a[b.k], o = b.fixed ? range(b.opts.length) : ord(u, b.k, b.opts.length);
+      return `<div class="card"><p class="lead"><strong>${esc(b.prompt)}</strong></p><div class="opts" role="radiogroup" aria-label="${esc(b.prompt)}">${o.map(i => { const op = b.opts[i];
+        return `<label class="opt ${sel === op.v ? 'on' : ''}"><input type="radio" name="${b.k}" value="${op.v}" data-kf="${b.k}" data-kt="single" data-k="o-${b.k}-${op.v}" ${sel === op.v ? 'checked' : ''}><span>${esc(op.t)}</span></label>`; }).join('')}</div></div>`;
+    }
+    case 'multi': {
+      const arr = u.a[b.k] || [], full = b.pick && arr.length >= b.pick, o = b.fixed ? range(b.opts.length) : ord(u, b.k, b.opts.length);
+      return `<div class="card"><p class="lead"><strong>${esc(b.prompt)}</strong> <span class="chip ${full ? 'green' : 'gold'}">${arr.length}${b.pick ? ' of ' + b.pick : ''} selected</span></p><div class="opts">${o.map(i => { const op = b.opts[i], on = arr.includes(op.v), dis = full && !on;
+        return `<label class="opt ${on ? 'on' : ''} ${dis ? 'dis' : ''}"><input type="checkbox" value="${op.v}" data-kf="${b.k}" data-kt="multi" data-kpick="${b.pick || 0}" data-k="m-${b.k}-${op.v}" ${on ? 'checked' : ''} ${dis ? 'disabled' : ''}><span>${esc(op.t)}</span></label>`; }).join('')}</div></div>`;
+    }
+    case 'grid': {
+      const a = u.a[b.k] || {}, o = ord(u, b.k, b.items.length);
+      return `<p class="lead"><strong>${esc(b.prompt)}</strong></p><div class="${b.cards ? 'deck' : 'gridlist'}">${o.map(i => { const it = b.items[i];
+        return `<div class="kcard ${a[it.v] ? 'done' : ''}" role="radiogroup" aria-label="${esc(it.t)}"><div class="kt">${esc(it.t)}</div><div class="roles">${b.choices.map(c =>
+          `<label class="rpill"><input type="radio" name="${b.k}-${it.v}" value="${c.v}" data-kf="${b.k}" data-kt="grid" data-ki="${it.v}" data-k="g-${b.k}-${it.v}-${c.v}" ${a[it.v] === c.v ? 'checked' : ''}><span>${esc(c.l)}</span></label>`).join('')}</div></div>`; }).join('')}</div>`;
+    }
+  }
+  return '';
+}
+
+function optsReveal(opts, picked) {
+  return `<ul class="rev">${opts.map(o => { const mine = picked.includes(o.v);
+    return `<li class="${o.ok ? 'best' : ''} ${mine ? 'mine' : ''} ${mine && !o.ok ? 'wrong' : ''}"><div class="rev-h">${o.ok ? '<span class="badge good">Best answer</span>' : ''}${mine ? '<span class="badge you">Your pick</span>' : ''}</div><p>${esc(o.t)}</p>${o.why ? `<p class="why">${esc(o.why)}</p>` : ''}</li>`; }).join('')}</ul>`;
+}
+function blkReveal(b, u) {
+  const a = u.a[b.k];
+  switch (b.t) {
+    case 'map': return mapHtml();
+    case 'order': {
+      const m = a || [], cardOf = v => b.cards.find(c => c.v === v);
+      return `<div class="card"><h3>${esc(b.prompt)}</h3><div style="overflow-x:auto"><table class="tbl"><thead><tr><th>#</th><th>Your card</th><th>Best answer</th><th>Its job</th></tr></thead><tbody>${b.answer.map((v, i) => { const ok = m[i] === v, mine = m[i] && cardOf(m[i]);
+        return `<tr><td>${i + 1}</td><td>${mine ? esc(mine.t) : '—'}</td><td><span class="mark ${ok ? 'ok' : 'bad'}">${ok ? '✓' : '✗'}</span> ${esc(cardOf(v).icon + ' ' + cardOf(v).t)}</td><td class="small">${esc(cardOf(v).job)}</td></tr>`; }).join('')}</tbody></table></div></div>`;
+    }
+    case 'text': return a ? `<div class="card"><h3>${esc(b.prompt)}</h3><p class="callout gold" style="margin:0">“${esc(a)}”</p></div>` : '';
+    case 'single': return `<div class="card"><h3>${esc(b.prompt)}</h3>${optsReveal(b.opts, a != null ? [a] : [])}</div>`;
+    case 'multi': return `<div class="card"><h3>${esc(b.prompt)}</h3>${optsReveal(b.opts, a || [])}</div>`;
+    case 'grid': {
+      const m = a || {}, lab = v => (b.choices.find(c => c.v === v) || { l: '—' }).l;
+      return `<div class="card"><h3>${esc(b.prompt)}</h3><div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Item</th><th>Your answer</th><th>Best answer</th><th>Why</th></tr></thead><tbody>${b.items.map(it => { const ok = okAns(it, m[it.v]);
+        return `<tr><td>${esc(it.t)}</td><td>${m[it.v] ? esc(lab(m[it.v])) : '—'}</td><td><span class="mark ${ok ? 'ok' : 'bad'}">${ok ? '✓' : '✗'}</span> ${esc([].concat(it.ans).map(lab).join(' or '))}</td><td class="small">${esc(it.why)}</td></tr>`; }).join('')}</tbody></table></div></div>`;
+    }
+  }
+  return '';
+}
+
+/* ==========================================================================
+   VIEWS: hub, lab menu, steps, results
+   ========================================================================== */
+const unitsOptional = un => !!un.optional;
+function overallProgress() {
+  const us = UNITS.filter(x => !unitsOptional(x));
+  return { d: us.filter(x => uOf(x.id).submitted).length, n: us.length };
+}
+function viewHub() {
+  const us = labUnits('pbi'), done = us.filter(x => uOf(x.id).submitted).length;
+  return `<section class="hero"><div class="pill"><h1 tabindex="-1">Power BI · Lecture 1</h1></div><p>${COURSE} · interactive team activities</p></section>
+  <div class="hubnav"><a class="btn primary" href="#/agenda">📅 Today’s agenda</a><a class="btn" href="#/wrapup">🏁 Wrap-up and homework</a></div>
+  <h2>Activities</h2>
+  <div class="grid">
+    <article class="card case-card">
+      <span class="ico" aria-hidden="true">🃏</span>
+      <h3>Power BI Ecosystem Lab</h3>
+      <p class="muted">Why companies moved from spreadsheets to BI, a card game that deals the five components of Power BI into order, and which tool does which job: Desktop, Service or Mobile.</p>
+      <p class="small muted">${us.length} activities (one optional) · about 10–15 minutes each in breakout rooms</p>
+      <div class="foot"><span class="chip ${done === us.length ? 'green' : 'gold'}">${done} of ${us.length} submitted</span>
+        <a class="btn primary" href="#/pbi">${done || us.some(x => unitStatus(x) !== 'new') ? 'Continue' : 'Start'} →</a></div>
+    </article>
+  </div>
+  <p class="muted small" style="margin-top:18px">More activities will appear here as the rest of Lecture 1 is built: the interface tour, project setup and connecting to data.</p>`;
+}
+function labMenu(lab) {
+  const L = LABS[lab], units = labUnits(lab), tot = labTotals(lab), subm = units.filter(x => uOf(x.id).submitted);
+  const card = un => {
+    const u = uOf(un.id), st = unitStatus(un), pr = unitProgress(un), pct = st === 'submitted' || st === 'revealed' ? 100 : Math.round(pr.d / pr.n * 100);
+    const chip = { new: '<span class="chip">Not started</span>', progress: '<span class="chip gold">In progress</span>', submitted: '<span class="chip dark">Submitted · awaiting debrief</span>', revealed: un.noScore ? '<span class="chip green">Shared in discussion</span>' : `<span class="chip green">Score ${unitScore(un, u).total} / 100</span>` }[st];
+    const label = { new: 'Start', progress: 'Continue', submitted: 'View answers', revealed: 'See results' }[st];
+    return `<article class="card case-card"><span class="ico" aria-hidden="true">${un.icon}</span><h3>${esc(un.title)}</h3><p class="muted small" style="margin:0">${esc(un.tagline)}</p>
+      <p class="small" style="margin:0"><span class="chip">${esc(un.stage)}</span>${un.optional ? ' <span class="chip gold">Optional</span>' : ''}</p>
+      <div class="bar" role="progressbar" aria-label="Progress" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div>
+      <div class="foot">${chip}<a class="btn primary sm" href="${unitHref(un)}">${label} →</a></div></article>`;
+  };
+  const stations = L.stations.map(s => { const us = units.filter(x => x.station === s.n), same = us.length === 1 && us[0].title === s.title;
+    return `<section aria-labelledby="st${s.n}"><h2 id="st${s.n}" style="margin-top:22px"><span class="chip gold" style="vertical-align:3px">${L.word} ${s.n}</span>${same ? '' : ' ' + esc(s.title)}</h2><div class="grid">${us.map(card).join('')}</div></section>`; }).join('');
+  const facTools = ui.fac ? `<div class="card callout gold"><h3>Facilitator tools</h3><p class="small">Answers stay hidden until you reveal them. Reveal here for every submitted activity, or open one activity’s results page.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary sm" data-act="pbi-reveal-all" ${subm.length ? '' : 'disabled'}>Reveal all submitted (${subm.length})</button><button class="btn sm" data-act="pbi-hide-all">Hide all answers again</button></div></div>` : '';
+  const scoreCard = tot.n ? `<div class="card"><div class="score"><div class="num">${tot.got}<small> / ${tot.max}</small></div><div><h3 style="margin:0">${esc(L.title)} score${state.team ? ' · ' + esc(state.team) : ''}</h3><p class="muted small" style="margin:0">Across ${tot.n} revealed activit${tot.n > 1 ? 'ies' : 'y'}</p></div><button class="btn sm" data-act="pbi-copy" style="margin-left:auto">Copy summary for chat</button></div></div>` : '';
+  return `<h1 tabindex="-1">${esc(L.title)}</h1>
+  <div class="card">${L.intro()}
+    <div class="field" style="margin-top:16px"><label for="team"><strong>Team name</strong></label><input type="text" id="team" data-field="team" maxlength="40" placeholder="e.g. Team Yellow Bars" value="${esc(state.team)}" autocomplete="off"></div></div>
+  ${facTools}${scoreCard}${stations}`;
+}
+const unitHead = unit => `<h1 tabindex="-1" style="margin-bottom:.2em">${unit.icon} ${esc(unit.title)}</h1>
+  <p class="muted" style="margin-bottom:14px"><span class="chip gold">${labOf(unit).word} ${unit.station}</span> <span class="chip">${esc(unit.stage)}</span>${unit.optional ? ' <span class="chip gold">Optional</span>' : ''}</p>`;
+function unitStep(unit, step) {
+  const H = labOf(unit).hash, u = uOf(unit.id); u.step = step; u.vis[step] = true; saveSoon(); currentUnit = unit;
+  const steps = unit.steps(u), n = steps.length, labels = steps.map(s => s.label).concat('Review & submit');
+  const stepper = `<ol class="stepper" aria-label="Steps">${labels.map((l, i) => { const s = i + 1, done = s <= n && stepDone(unit, u, s);
+    return `<li><a href="${H}/${unit.id}/${s}" class="${done ? 'done' : ''}" ${s === step ? 'aria-current="step"' : ''}><span class="n">${done ? '✓' : s}</span>${esc(l)}</a></li>`; }).join('')}</ol>`;
+  let body;
+  if (step <= n) {
+    body = `<h2>${step}. ${esc(steps[step - 1].label)}</h2>${steps[step - 1].blocks.map(b => blkPlay(b, u)).join('')}
+      <div class="stepnav">${step === 1 ? `<a class="btn ghost" href="${H}">← Back to ${esc(labOf(unit).title)}</a>` : `<a class="btn ghost" href="${H}/${unit.id}/${step - 1}">← Back</a>`}<a class="btn primary" href="${H}/${unit.id}/${step + 1}">${step === n ? 'Review →' : 'Next →'}</a></div>`;
+  } else {
+    const miss = steps.map((s, i) => ({ s, i: i + 1 })).filter(x => !stepDone(unit, u, x.i));
+    body = `<h2>${step}. Review and submit</h2><p class="lead">Once submitted, your answers are locked until the debrief (you can still reopen them before the reveal).</p>
+      ${miss.length ? `<div class="callout" style="margin-bottom:14px"><strong>Heads up:</strong> ${miss.length} step${miss.length > 1 ? 's' : ''} still incomplete.</div>` : '<div class="callout green" style="margin-bottom:14px"><strong>All set!</strong> Every step is complete.</div>'}
+      <div class="card"><ul class="plain">${steps.map((s, i) => `<li>${stepDone(unit, u, i + 1) ? '✅' : '⚠️'} <strong>${esc(s.label)}</strong> <a class="small" href="${H}/${unit.id}/${i + 1}">Edit</a></li>`).join('')}</ul></div>
+      <div class="stepnav"><a class="btn ghost" href="${H}/${unit.id}/${n}">← Back</a><span style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn danger sm" data-act="pbi-reset">Clear this activity</button><button class="btn primary" data-act="pbi-submit" data-k="submit">Submit answers ✓</button></span></div>`;
+  }
+  return unitHead(unit) + stepper + body;
+}
+function unitResults(unit) {
+  const H = labOf(unit).hash, u = uOf(unit.id); currentUnit = unit;
+  if (!u.revealed) {
+    return `${unitHead(unit)}<div class="card locked"><div class="big" aria-hidden="true">🔒</div><h2>Answers locked in${state.team ? ' for ' + esc(state.team) : ''}</h2>
+      <p class="lead">Nice work. Head back to the main room. Feedback and scores are revealed together during the debrief.</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><a class="btn primary" href="${H}">← Back to ${labOf(unit).title}</a><button class="btn" data-act="pbi-reopen">Edit answers</button>${ui.fac ? '<button class="btn primary" data-act="pbi-reveal" data-k="reveal">Reveal answers (facilitator)</button>' : ''}</div></div>`;
+  }
+  const sc = unitScore(unit, u), steps = unit.steps(u), LU = labUnits(unit.lab), nx = LU[LU.indexOf(unit) + 1];
+  const table = sc.rows.map(r => `<tr><td>${esc(r.label)}</td><td class="r">${fp(r.g)} / ${r.m}</td></tr>`).join('');
+  const reveal = steps.map((st, si) => `<h2 style="margin-top:26px">${si + 1}. ${esc(st.label)}</h2>${st.blocks.map(b => blkReveal(b, u)).join('')}`).join('');
+  const peer = unit.peer ? `<div class="card callout gold"><h3>Peer review</h3><p class="small">Swap with another team, or present one to the room. For each, ask:</p><ul class="plain">${unit.peer.map(x => `<li>☐ ${esc(x)}</li>`).join('')}</ul></div>` : '';
+  return `${unitHead(unit)}
+  ${unit.noScore ? '<div class="card callout green"><strong>Not scored.</strong> This activity is for discussion: use the peer-review card below.</div>' : `<div class="card"><div class="score"><div class="num">${sc.total}<small> / 100</small></div><div style="flex:1;min-width:240px"><table class="tbl" aria-label="Score breakdown"><tbody>${table}<tr class="total"><td>Total</td><td class="r">${sc.total}</td></tr></tbody></table></div></div></div>`}
+  ${reveal}${peer}
+  <div class="card"><h2>Discussion prompts</h2><ul class="plain">${unit.prompts.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>
+  ${ui.fac ? `<div class="card callout gold"><h3>Facilitator notes</h3><ul class="plain">${unit.fac.map(f => `<li>${esc(f)}</li>`).join('')}</ul></div>` : ''}
+  <div class="stepnav"><a class="btn ghost" href="${H}">← Back to ${labOf(unit).title}</a><span style="display:flex;gap:10px;flex-wrap:wrap">${ui.fac ? '<button class="btn sm" data-act="pbi-hide" data-k="hide">Hide answers again</button>' : ''}${nx ? `<a class="btn primary" href="${unitHref(nx)}">Next: ${esc(nx.title)} →</a>` : `<a class="btn primary" href="${H}">Back to ${esc(labOf(unit).title)} →</a>`}</span></div>`;
+}
+function labView(r) { return r.menu ? labMenu(r.lab) : r.step === 'results' ? unitResults(r.unit) : unitStep(r.unit, r.step); }
+function labRedirect(r) {
+  if (!r.unit) return null;
+  const u = uOf(r.unit.id), n = r.unit.steps(u).length + 1;
+  if (r.step === 'results' && !u.submitted) return labOf(r.unit).hash + '/' + r.unit.id + '/' + n;
+  if (r.step !== 'results' && u.submitted) return labOf(r.unit).hash + '/' + r.unit.id + '/results';
+  return null;
+}
+
+/* ==========================================================================
+   AGENDA + WRAP-UP PAGES  (3 hours in total, including a 15-minute break)
+   ========================================================================== */
+const W = () => { if (!state.wrap) state.wrap = { checks: {}, notes: {} }; if (!state.wrap.checks) state.wrap.checks = {}; if (!state.wrap.notes) state.wrap.notes = {}; return state.wrap; };
+const countSubmitted = us => ({ d: us.filter(x => uOf(x.id).submitted).length, n: us.length });
+function ringHtml(d, n) {
+  const pct = n ? d / n : 0, r = 52, C = 2 * Math.PI * r;
+  return `<div class="ring" role="img" aria-label="${d} of ${n} activities submitted"><svg viewBox="0 0 130 130"><circle cx="65" cy="65" r="${r}" class="rbg"/><circle cx="65" cy="65" r="${r}" class="rfg" stroke-dasharray="${(C * pct).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 65 65)"/></svg>
+    <div class="rtxt"><strong>${d}</strong><span>of ${n}</span></div></div>`;
+}
+const heroBand = (title, sub) => `<section class="twotone" aria-labelledby="pt"><div class="tt-left"></div><div class="tt-right"></div><div class="tt-pill"><h1 id="pt" tabindex="-1">${title}</h1></div></section><p class="tt-sub">${sub}</p>`;
+
+const OBJECTIVES = [
+  { i: '📉', t: 'Why BI exists', d: 'What goes wrong with spreadsheet analysis, and what Business Intelligence is.' },
+  { i: '🃏', t: 'The five components', d: 'Power Query, the data model, DAX, visuals, and sharing, in the order you build them.' },
+  { i: '🧰', t: 'The Power BI tools', d: 'Desktop, the online service and the mobile app: which does which job.' },
+  { i: '🖥️', t: 'Your workspace', d: 'Install Desktop, tour the interface and set up a Git-tracked project.' },
+  { i: '🔌', t: 'Connecting to data', d: 'Files, databases, native SQL, APIs, and how Power BI stores the data it loads.' },
+  { i: '🧪', t: 'Hands-on', d: 'Extract data from a source you have not seen, and fix a broken connection.' }];
+/* minutes sum to 180: 165 of teaching and activities, plus a 15-minute break */
+const AGENDA = [
+  { time: '0:00', min: 5, i: '👋', t: 'Welcome and objectives', live: true, b: ['What we cover today, and how the team activities work', 'Concepts first: you build hands-on from the interface tour onward'] },
+  { time: '0:05', min: 10, i: '📉', t: 'Why Business Intelligence?', b: ['Where spreadsheet analysis falls apart', 'BI is the full workflow, not just charts'], links: [{ t: 'Why Business Intelligence?', href: '#/pbi/p1/1', lab: 'pbi', ids: ['p1'] }] },
+  { time: '0:15', min: 20, i: '🃏', t: 'The pipeline card game', b: ['Meet the five components: Power Query, data model, DAX, visuals, share', 'Deal the cards into order, then place the task cards'], links: [{ t: 'The Pipeline Card Game', href: '#/pbi/p2/1', lab: 'pbi', ids: ['p2'] }] },
+  { time: '0:35', min: 15, i: '🧰', t: 'Desktop, Service and Mobile', b: ['Build in Desktop, publish to the Service, view on any device', 'What lives in a .pbix file'], links: [{ t: 'Desktop, Service or Mobile?', href: '#/pbi/p3/1', lab: 'pbi', ids: ['p3'] }] },
+  { time: '0:50', min: 20, i: '🖥️', t: 'Install and interface tour', live: true, b: ['Install Power BI Desktop', 'Canvas, ribbon, fields pane and visualisations pane; organising pages and visuals'] },
+  { time: '1:10', min: 10, i: '🗂️', t: 'Project setup: .pbip and Git', live: true, b: ['What the Power BI Project folder contains', 'Why it enables version control, and committing the first project'] },
+  { time: '1:20', min: 20, i: '🔌', t: 'Connecting to data I', live: true, b: ['Flat files: CSV, multi-sheet Excel, JSON', 'Relational databases and connection settings', 'Native SQL queries to extract only what you need'] },
+  { time: '1:40', min: 15, i: '☕', t: 'Break', brk: true, b: ['15 minutes. Stretch, hydrate, and be back on time'] },
+  { time: '1:55', min: 25, i: '🔄', t: 'Connecting to data II', live: true, b: ['Import vs. DirectQuery: how each works and when to choose each', 'REST APIs and the Web connector', 'Other sources at awareness level: NoSQL, Analysis Services, Dataverse, Dataflows, Fabric'] },
+  { time: '2:20', min: 15, i: '🛠️', t: 'When it goes wrong', live: true, b: ['Troubleshooting data source connections', 'Optimising extraction: load only what you need'] },
+  { time: '2:35', min: 15, i: '🧪', t: 'Hands-on lab', live: true, b: ['Extract data from a source you have not seen', 'Confirm it loaded in Data view (no visuals yet)'] },
+  { time: '2:50', min: 10, i: '🏁', t: 'Checkpoint and wrap-up', b: ['Five quick questions across the lecture', 'Takeaways, scores and homework'], links: [{ t: 'Lecture checkpoint', href: '#/pbi/p5/1', lab: 'pbi', ids: ['p5'] }, { t: 'Wrap-up page', href: '#/wrapup', plain: true }] }
+];
+function stopLinks(s) {
+  if (s.brk) return '<span class="chip dark">Break</span>';
+  if (s.live) return '<span class="chip gold">Live teaching</span> <span class="small muted">Your facilitator leads this part.</span>';
+  return (s.links || []).map(l => {
+    let chip = '';
+    if (l.ids) { const c = countSubmitted(UNITS.filter(x => l.ids.includes(x.id))); chip = `<span class="chip ${c.d === c.n ? 'green' : 'gold'}">${c.d} of ${c.n} submitted</span>`; }
+    return `<a class="btn ${l.plain ? '' : 'primary'} sm" href="${l.href}">${esc(l.t)} →</a> ${chip}`;
+  }).join(' ');
+}
+function viewAgenda() {
+  const o = overallProgress();
+  const stops = AGENDA.map((s, i) => `<li class="tstop"><span class="node ${s.brk ? 'brk' : 'n' + (i % 3)}" aria-hidden="true">${s.i}</span>
+    <div class="card stopcard ${s.live || s.brk ? 'live' : ''}"><div class="stophead"><span class="stopnum">${s.time} · ${s.min} min</span><h3>${esc(s.t)}</h3>${s.live || s.brk || !(s.links || []).some(l => !l.plain) ? '' : '<span class="chip gold">Team activity</span>'}</div>
+      <ul class="plain">${s.b.map(x => `<li>${esc(x)}</li>`).join('')}</ul><div class="stoplinks">${stopLinks(s)}</div></div></li>`).join('');
+  return heroBand('Today’s agenda', `${LECTURE} · 3 hours including a 15-minute break`) + `
+  <div class="card progresscard"><div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap">${ringHtml(o.d, o.n)}
+    <div style="flex:1;min-width:240px"><h2 style="margin-bottom:4px">Your journey so far</h2><p class="muted" style="margin:0">${o.d === o.n ? 'Every activity is submitted. Time to wrap up!' : `${o.n - o.d} activit${o.n - o.d === 1 ? 'y' : 'ies'} still to submit. Work through the stops below, in order.`}</p></div>
+    <a class="btn primary" href="#/wrapup">Wrap-up and homework →</a></div></div>
+  <h2 style="margin-top:26px">Today’s objectives</h2>
+  <div class="objgrid">${OBJECTIVES.map((x, i) => `<div class="obj o${i % 3}"><span class="oi" aria-hidden="true">${x.i}</span><h3>${esc(x.t)}</h3><p>${esc(x.d)}</p></div>`).join('')}</div>
+  <h2 style="margin-top:30px">The journey</h2>
+  <ol class="timeline">${stops}</ol>
+  <div class="card callout"><strong>Tip:</strong> the team activities run in breakout rooms; your facilitator reveals the answers together in the main room. Activities for the live-teaching stops will be added later.</div>`;
+}
+
+const TAKEAWAYS = [
+  { i: '📉', t: 'Spreadsheets break at scale', d: 'Manual work, old data, many versions, weak security and no single source of truth are why companies move to BI.' },
+  { i: '🔁', t: 'BI is the whole workflow', d: 'Collect, clean, organise and visualise data so people can decide: it is more than charts and dashboards.' },
+  { i: '🃏', t: 'Five components, in order', d: 'Power Query cleans, the data model organises, DAX calculates, visuals show, and publishing shares.' },
+  { i: '🧰', t: 'Three tools, three jobs', d: 'Desktop builds (Windows, one .pbix file), the Service hosts and shares, and the mobile app views.' },
+  { i: '⚖️', t: 'Choose the tool for the need', d: 'Power BI is a strong fit for standard reports, but the right choice depends on the need and the audience.' }];
+const HOMEWORK = [
+  { id: 'h1', t: 'Install Power BI Desktop if you could not in class', d: 'The video says Desktop is Windows-only. Ask your facilitator if you use a Mac.' },
+  { id: 'h2', t: 'Explore the Power BI community', d: 'Find forums, webinars or tutorials, and bring back three resources you found useful.' },
+  { id: 'h3', t: 'Optional: the Power BI fit check', d: 'Discuss with your team where Power BI is enough and where you would look elsewhere.', href: '#/pbi/p4/1', link: 'Open the fit check' },
+  { id: 'h4', t: 'Watch the course video (self-study)', d: 'What Is Power BI? The Full Story Visually Explained.', href: 'https://www.youtube.com/watch/PDXpM7IvXis', link: 'Open the video ↗', ext: true }];
+const RESOURCES = [['Self-study video', ['What Is Power BI? The Full Story Visually Explained (#PowerBI Course 1)']]];
+function viewWrap() {
+  const w = W(), o = overallProgress(), t = labTotals('pbi');
+  const done = HOMEWORK.filter(h => w.checks[h.id]).length, cp = uOf('p5');
+  const fac = ui.fac ? `<div class="card callout gold"><h3>Facilitator: closing questions</h3><ul class="plain"><li>Which component do you think takes the most time in a real project?</li><li>Where did your team disagree today, and what settled it?</li><li>What is one thing you will check on your own PC before the next session?</li></ul></div>` : '';
+  return heroBand('Wrap-up', 'You made it through the lecture. Here is what to take with you.') + `
+  <div class="card progresscard"><div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap">${ringHtml(o.d, o.n)}
+    <div style="flex:1;min-width:240px"><h2 style="margin-bottom:4px">${state.team ? esc(state.team) + ': ' : ''}${o.d} of ${o.n} activities submitted</h2><p class="muted" style="margin:0">${o.d < o.n ? 'You can still finish the rest: they stay open on the agenda.' : 'Everything is submitted. Great teamwork!'}</p></div>
+    <a class="btn" href="#/agenda">← Back to the agenda</a></div></div>
+  <div class="card callout gold" style="margin-top:18px"><div style="display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap"><span><strong>🧠 Test yourselves: the lecture checkpoint</strong><br><span class="small muted">Five quick questions on what you have learned.</span></span>
+    <span style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="chip ${cp.submitted ? 'green' : 'gold'}">${cp.submitted ? 'Submitted' : 'Not submitted yet'}</span><a class="btn primary sm" href="#/pbi/p5/1">${cp.submitted ? 'View it' : 'Start the checkpoint'} →</a></span></div></div>
+  <h2 style="margin-top:26px">Five things to remember</h2>
+  <div class="takegrid">${TAKEAWAYS.map((x, i) => `<div class="take t${i % 3}"><span class="ti" aria-hidden="true">${x.i}</span><h3>${esc(x.t)}</h3><p>${esc(x.d)}</p></div>`).join('')}</div>
+  <h2 style="margin-top:30px">Your scoreboard</h2>
+  <div class="card"><table class="tbl" aria-label="Scores by activity"><tbody><tr><td><a href="#/pbi">Power BI Ecosystem Lab</a></td><td class="r">${t.n ? t.got + ' / ' + t.max : '<span class="muted">not revealed yet</span>'}</td></tr>
+    <tr class="total"><td>Total</td><td class="r">${t.max ? t.got + ' / ' + t.max : '—'}</td></tr></tbody></table>
+    <p class="muted small" style="margin:10px 0 0">Scores appear after your facilitator reveals the answers. The fit check is an unscored discussion.</p></div>
+  <h2 style="margin-top:30px">Before the next session <span class="chip ${done === HOMEWORK.length ? 'green' : 'gold'}" style="vertical-align:4px">${done} of ${HOMEWORK.length} done</span></h2>
+  <div class="card"><ul class="checklist">${HOMEWORK.map(h => `<li><label class="chk ${w.checks[h.id] ? 'on' : ''}"><input type="checkbox" data-wf="check" data-id="${h.id}" data-k="hw-${h.id}" ${w.checks[h.id] ? 'checked' : ''}><span><strong>${esc(h.t)}</strong><br><span class="muted small">${esc(h.d)}</span>${h.href ? `<br><a class="small" href="${h.href}" ${h.ext ? 'target="_blank" rel="noopener"' : ''}>${esc(h.link)}</a>` : ''}</span></label></li>`).join('')}</ul>
+    ${done === HOMEWORK.length ? '<div class="callout green" style="margin-top:12px"><strong>All set for the next session!</strong></div>' : ''}</div>
+  <h2 style="margin-top:30px">Your take-away</h2>
+  <div class="card"><label for="rem" class="tlabel"><strong>One thing I will remember from today</strong></label><textarea id="rem" data-wf="note" data-id="rem" placeholder="…">${esc(w.notes.rem || '')}</textarea>
+    <label for="ask" class="tlabel" style="margin-top:14px"><strong>One question I still have</strong></label><textarea id="ask" data-wf="note" data-id="ask" placeholder="…">${esc(w.notes.ask || '')}</textarea></div>
+  <h2 style="margin-top:30px">Self-study materials</h2>
+  <div class="card"><p class="muted small">The video behind today’s ecosystem activities. Find the link in the checklist above.</p><div class="reslist">${RESOURCES.map(([g, l]) => `<div><h4>${esc(g)}</h4><ul class="plain">${l.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>`).join('')}</div></div>
+  ${fac}
+  <div class="stepnav"><a class="btn ghost" href="#/agenda">← Back to the agenda</a><span style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn sm" data-act="wrap-copy" data-k="wrapcopy">Copy my summary</button><a class="btn primary" href="#/">Back to the activities →</a></span></div>`;
+}
+function wrapSummary() {
+  const w = W(), t = labTotals('pbi'), o = overallProgress(), lines = [LECTURE + ' wrap-up' + (state.team ? ' – ' + state.team : '')];
+  lines.push(`Activities submitted: ${o.d} of ${o.n}`);
+  if (t.n) lines.push(`Power BI Ecosystem Lab: ${t.got}/${t.max}`);
+  lines.push('Homework done: ' + (HOMEWORK.filter(h => w.checks[h.id]).map(h => h.t).join('; ') || 'none yet'));
+  if (w.notes.rem) lines.push('I will remember: ' + w.notes.rem);
+  if (w.notes.ask) lines.push('My question: ' + w.notes.ask);
+  return lines.join('\n');
+}
+
+/* ==========================================================================
+   ROUTER + RENDER
+   ========================================================================== */
+function route() {
+  const p = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
+  if (p[0] === 'agenda') return { name: 'agenda' };
+  if (p[0] === 'wrapup') return { name: 'wrap' };
+  if (LABS[p[0]]) {
+    const lab = p[0], unit = p[1] && unitById(p[1]); if (!unit || unit.lab !== lab) return { name: 'lab', lab, menu: true };
+    if (p[2] === 'results') return { name: 'lab', lab, unit, step: 'results' };
+    const u = uOf(unit.id), n = unit.steps(u).length + 1; let st = parseInt(p[2], 10);
+    if (!(st >= 1 && st <= n)) st = Math.min(u.step || 1, n);
+    return { name: 'lab', lab, unit, step: st };
+  }
+  return { name: 'hub' };
+}
+function render(opts) {
+  opts = opts || {};
+  const r = route();
+  if (r.name === 'lab') { const to = labRedirect(r); if (to) { location.replace(to); return; } }
+  const y = window.scrollY;
+  paintToolbar(r);
+  const html = r.name === 'agenda' ? viewAgenda() : r.name === 'wrap' ? viewWrap() : r.name === 'lab' ? labView(r) : viewHub();
+  const main = $('#main');
+  main.innerHTML = html;
+  const name = r.name === 'agenda' ? 'Agenda' : r.name === 'wrap' ? 'Wrap-up' : r.name === 'lab' ? (r.unit ? r.unit.title : LABS[r.lab].title) : 'Activities';
+  document.title = name + ' · ' + LECTURE;
+  if (opts.nav) { window.scrollTo(0, 0); const h = main.querySelector('h1'); if (h) h.focus({ preventScroll: true }); }
+  else {
+    window.scrollTo(0, y);
+    if (opts.restore) { const el = main.querySelector('[data-k="' + opts.restore + '"]'); if (el) el.focus({ preventScroll: true }); }
+  }
+  paintSaved();
+}
+const rerender = () => { const a = document.activeElement; render({ restore: a && a.dataset ? a.dataset.k : null }); };
+window.addEventListener('hashchange', () => { ui.sel = null; render({ nav: true }); });
+
+/* ==========================================================================
+   EVENTS (delegated)
+   ========================================================================== */
+const curLab = () => { const r = route(); return r.name === 'lab' ? r.lab : 'pbi'; };
+function curUnit() { const r = route(); return r.name === 'lab' && r.unit ? r.unit : null; }
+function unitChange(el) {
+  const unit = curUnit(); if (!unit) return; const u = uOf(unit.id), k = el.dataset.kf, t = el.dataset.kt;
+  if (t === 'text') return;   // saved on input; re-rendering on blur would swallow the click that caused it
+  if (t === 'single') u.a[k] = el.value;
+  else if (t === 'multi') {
+    const arr = u.a[k] || (u.a[k] = []), i = arr.indexOf(el.value), pick = +el.dataset.kpick;
+    if (el.checked && i < 0) { if (!pick || arr.length < pick) arr.push(el.value); } else if (!el.checked && i >= 0) arr.splice(i, 1);
+  } else if (t === 'grid') { (u.a[k] || (u.a[k] = {}))[el.dataset.ki] = el.value; }
+  save(); rerender();
+}
+function pbiClick(act, el) {
+  const unit = curUnit(), u = unit ? uOf(unit.id) : null;
+  switch (act) {
+    case 'pbi-stop': ui.mapStop = ui.mapStop === +el.dataset.i ? null : +el.dataset.i; rerender(); break;
+    case 'pbi-card': { const k = el.dataset.b, v = el.dataset.v; ui.sel = ui.sel && ui.sel.k === k && ui.sel.v === v ? null : { k, v }; rerender(); break; }
+    case 'pbi-slot': if (unit) {
+      const k = el.dataset.b, i = +el.dataset.i, b = blockByKey(unit, k); if (!b) break;
+      const arr = u.a[k] && u.a[k].length === b.cards.length ? u.a[k] : (u.a[k] = Array(b.cards.length).fill(null));
+      if (ui.sel && ui.sel.k === k) { arr[i] = ui.sel.v; ui.sel = null; }
+      else if (arr[i]) arr[i] = null;
+      save(); rerender();
+    } break;
+    case 'pbi-submit': if (unit) {
+      const steps = unit.steps(u), miss = steps.map((s, i) => i + 1).filter(i => !stepDone(unit, u, i));
+      confirmModal('Submit your answers?', miss.length ? `<p>${miss.length} step${miss.length > 1 ? 's' : ''} still incomplete. Missing answers score no points.</p><p>You can reopen your answers until the facilitator reveals them.</p>` : '<p>Your answers will be locked until the debrief. You can reopen them until the facilitator reveals them.</p>', 'Submit',
+        () => { u.submitted = true; save(); closeModal(); location.hash = labOf(unit).hash + '/' + unit.id + '/results'; });
+    } break;
+    case 'pbi-reopen': if (u) { u.submitted = false; save(); location.hash = labOf(unit).hash + '/' + unit.id + '/' + (unit.steps(u).length + 1); } break;
+    case 'pbi-reset': if (unit) confirmModal('Clear this activity?', '<p>All answers for this activity will be removed.</p>', 'Clear activity', () => { delete state.units[unit.id]; save(); closeModal(); location.hash = labOf(unit).hash + '/' + unit.id + '/1'; render({ nav: true }); }, true); break;
+    case 'pbi-reveal': if (u && ui.fac) { u.revealed = true; save(); rerender(); } break;
+    case 'pbi-hide': if (u && ui.fac) { u.revealed = false; save(); rerender(); } break;
+    case 'pbi-reveal-all': if (ui.fac) { labUnits(curLab()).forEach(x => { const q = uOf(x.id); if (q.submitted) q.revealed = true; }); save(); rerender(); } break;
+    case 'pbi-hide-all': if (ui.fac) { labUnits(curLab()).forEach(x => { uOf(x.id).revealed = false; }); save(); rerender(); } break;
+    case 'pbi-copy': {
+      const lab = curLab(), lines = [LABS[lab].title + (state.team ? ' – ' + state.team : '')];
+      labUnits(lab).forEach(x => { const q = uOf(x.id); if (q.revealed && !x.noScore) lines.push(`${x.title}: ${unitScore(x, q).total}/100`); });
+      const t = labTotals(lab); lines.push(`Total: ${t.got}/${t.max}`); copyText(lines.join('\n')); break;
+    }
+  }
+}
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]'); if (!el) return;
+  const act = el.dataset.act;
+  switch (act) {
+    case 'timer-toggle': timerToggle(); break;
+    case 'timer-reset': timerReset(); closeModal(); break;
+    case 'timer-set': openModal(`<h2>Team timer</h2><p class="muted">Pick how long the breakout session should run. The timer is saved in this browser.</p>
+        <div class="row">${[5, 10, 15, 20].map(m => `<button class="btn ${T().duration === m * 60 ? 'primary' : ''}" data-act="timer-min" data-m="${m}">${m} min</button>`).join('')}</div>
+        <div class="actions"><button class="btn danger" data-act="timer-reset">Reset timer</button><button class="btn" data-act="modal-close">Close</button></div>`); break;
+    case 'timer-min': timerSetMinutes(+el.dataset.m); closeModal(); break;
+    case 'dismiss-banner': ui.bannerHidden = true; paintBanner(); break;
+    case 'fac':
+      if (ui.fac) { ui.fac = false; try { sessionStorage.removeItem('pbi:fac'); } catch (x) {} paintControls(); rerender(); }
+      else openModal(`<h2>Facilitator mode</h2><p class="muted">Enter the facilitator code to reveal answers and see facilitator notes.</p>
+        <form data-form="pin"><input type="text" id="pin" autocomplete="off" aria-label="Facilitator code" placeholder="Code"><div class="err" id="pinerr" role="alert"></div>
+        <div class="actions"><button type="button" class="btn ghost" data-act="modal-close">Cancel</button><button type="submit" class="btn primary">Unlock</button></div></form>`);
+      break;
+    case 'data': openModal(`<h2>Save, load or reset</h2><p class="muted">Progress is saved automatically in this browser. Export a backup file to move it to another computer.</p>
+        <div class="row"><button class="btn" data-act="export">⬇ Export progress</button><button class="btn" data-act="import">⬆ Import progress</button></div>
+        <input type="file" id="importfile" accept="application/json,.json" hidden>
+        <div class="err" id="dataerr" role="alert"></div>
+        <div class="actions"><button class="btn danger" data-act="reset-all">Reset everything</button><button class="btn" data-act="modal-close">Close</button></div>`); break;
+    case 'export': {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+      a.download = 'powerbi-l1-progress-' + (state.team || 'team').replace(/[^\w-]+/g, '_') + '.json'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); break;
+    }
+    case 'import': $('#importfile').click(); break;
+    case 'reset-all': confirmModal('Reset everything?', '<p>This clears the team name, all answers, scores and the timer in this browser. It cannot be undone.</p>', 'Reset everything', () => { state = defaults(); save(); closeModal(); paintControls(); paintBanner(); location.hash = '#/pbi'; render({ nav: true }); }, true); break;
+    case 'modal-ok': { const cb = confirmModal.cb; if (cb) cb(); break; }
+    case 'modal-close': closeModal(); break;
+    case 'modal-bg': if (e.target === el) closeModal(); break;
+    case 'wrap-copy': copyText(wrapSummary()); break;
+    default: if (act.indexOf('pbi-') === 0) pbiClick(act, el);
+  }
+});
+document.addEventListener('change', e => {
+  const el = e.target;
+  if (el.dataset.wf === 'check') { W().checks[el.dataset.id] = el.checked; save(); rerender(); return; }
+  if (el.dataset.kf) { unitChange(el); return; }
+  if (el.id === 'importfile') {
+    const file = el.files[0]; if (!file) return;
+    const rd = new FileReader();
+    rd.onload = () => {
+      try {
+        const d = JSON.parse(rd.result); if (!d || d.v !== 1 || typeof d.units !== 'object') throw new Error('bad');
+        state = Object.assign(defaults(), d); state.timer = Object.assign(defaults().timer, d.timer || {});
+        save(); closeModal(); paintControls(); paintBanner(); render({ nav: true }); toast('Progress imported');
+      } catch (x) { $('#dataerr').textContent = 'That file is not a valid progress export.'; }
+    };
+    rd.readAsText(file);
+  }
+});
+document.addEventListener('input', e => {
+  const el = e.target;
+  if (el.dataset.wf === 'note') { W().notes[el.dataset.id] = el.value; saveSoon(); }
+  else if (el.dataset.kf && el.dataset.kt === 'text') { const unit = curUnit(); if (unit) { uOf(unit.id).a[el.dataset.kf] = el.value; saveSoon(); } }
+  else if (el.dataset.field === 'team') { state.team = el.value; saveSoon(); }
+});
+document.addEventListener('submit', e => {
+  if (e.target.dataset.form !== 'pin') return;
+  e.preventDefault();
+  if ($('#pin').value.trim().toLowerCase() === FACILITATOR_PIN) {
+    ui.fac = true; try { sessionStorage.setItem('pbi:fac', '1'); } catch (x) {}
+    closeModal(); paintControls(); rerender(); toast('Facilitator mode on');
+  } else { $('#pinerr').textContent = 'That code isn’t right. Try again.'; }
+});
+document.addEventListener('keydown', e => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('g[data-act]')) { e.preventDefault(); e.target.dispatchEvent(new MouseEvent('click', { bubbles: true })); return; }
+  if (e.key === 'Escape') {
+    if ($('#modal-root').firstChild) closeModal();
+    else if (ui.sel) { ui.sel = null; rerender(); }
+  }
+});
+
+/* ==========================================================================
+   START
+   ========================================================================== */
+paintControls(); paintBanner(); paintSaved();
+if (T().endsAt && T().endsAt <= Date.now()) { T().endsAt = null; T().left = 0; T().done = true; paintControls(); paintBanner(); }
+render({ nav: false });
+})();
+</script>
+</body>
+</html>
