@@ -1,0 +1,497 @@
+[
+  {
+    "order_id": 1001,
+    "order_date": "2025-01-06",
+    "customer": {
+      "id": "C02",
+      "name": "Jonas Weber",
+      "city": "Hamburg",
+      "country": "Germany"
+    },
+    "shipped_date": "2025-01-10",
+    "discount": 0.05,
+    "items": [
+      {
+        "product": "Monitor Riser",
+        "category": "Home Office",
+        "quantity": 1,
+        "unit_price": 29.9
+      }
+    ]
+  },
+  {
+    "order_id": 1002,
+    "order_date": "2025-01-09",
+    "customer": {
+      "id": "C05",
+      "name": "Marta Ruiz",
+      "city": "Valencia",
+      "country": "Spain"
+    },
+    "shipped_date": "2025-01-11",
+    "discount": null,
+    "items": [
+      {
+        "product": "Monitor Riser",
+        "category": "Home Office",
+        "quantity": 3,
+        "unit_price": 29.9
+      },
+      {
+        "product": "Notebook A5",
+        "category": "Stationery",
+        "quantity": 4,
+        "unit_price": 4.5
+      }
+    ]
+  },
+  {
+    "order_id": 1003,
+    "order_date": "2025-01-14",
+    "customer": {
+      "id": "C08",
+      "name": "Lukas Meyer",
+      "city": "Munich",
+      "country": "Germany"
+    },
+    "shipped_date": "2025-01-15",
+    "discount": null,
+    "items": [
+      {
+        "product": "Desk Lamp",
+        "category": "Home Office",
+        "quantity": 4,
+        "unit_price": 27.5
+      }
+    ]
+  },
+  {
+    "order_id": 1004,
+    "order_date": "2025-01-21",
+    "customer": {
+      "id": "C03",
+      "name": "Priya Nair",
+      "city": "Manchester",
+      "country": "United Kingdom"
+    },
+    "shipped_date": "2025-01-22",
+    "discount": null,
+    "items": [
+      {
+        "product": "Gel Pen Set",
+        "category": "Stationery",
+        "quantity": 1,
+        "unit_price": 6.2
+      },
+      {
+        "product": "USB-C Cable",
+        "category": "Electronics",
+        "quantity": 4,
+        "unit_price": 9.9
+      },
+      {
+        "product": "Footrest",
+        "category": "Home Office",
+        "quantity": 1,
+        "unit_price": 24.0
+      }
+    ]
+  },
+  {
+    "order_id": 1005,
+    "order_date": "2025-01-28",
+    "customer": {
+      "id": "C06",
+      "name": "Daniel Clarke",
+      "city": "Toronto",
+      "country": "Canada"
+    },
+    "shipped_date": "2025-02-01",
+    "items": [
+      {
+        "product": "USB-C Cable",
+        "category": "Electronics",
+        "quantity": 1,
+        "unit_price": 9.9
+      },
+      {
+        "product": "Monitor Riser",
+        "category": "Home Office",
+        "quantity": 2,
+        "unit_price": 29.9
+      }
+    ]
+  },
+  {
+    "order_id": 1006,
+    "order_date": "2025-02-03",
+    "customer": {
+      "id": "C01",
+      "name": "Layla Haddad",
+      "city": "Cairo",
+      "country": "Egypt"
+    },
+    "shipped_date": "2025-02-04",
+    "discount": null,
+    "items": [
+      {
+        "product": "Laptop Stand",
+        "category": "Electronics",
+        "quantity": 5,
+        "unit_price": 32.0
+      }
+    ]
+  },
+  {
+    "order_id": 1007,
+    "order_date": "2025-02-05",
+    "customer": {
+      "id": "C04",
+      "name": "Omar Saleh",
+      "city": "Dubai",
+      "country": "United Arab Emirates"
+    },
+    "shipped_date": "2025-02-07",
+    "discount": null,
+    "items": [
+      {
+        "product": "Monitor Riser",
+        "category": "Home Office",
+        "quantity": 2,
+        "unit_price": 29.9
+      },
+      {
+        "product": "USB-C Cable",
+        "category": "Electronics",
+        "quantity": 1,
+        "unit_price": 9.9
+      }
+    ]
+  },
+  {
+    "order_id": 1008,
+    "order_date": "2025-02-11",
+    "customer": {
+      "id": "C07",
+      "name": "Yasmin Farouk",
+      "city": "Alexandria",
+      "country": "Egypt"
+    },
+    "shipped_date": "2025-02-15",
+    "discount": 0.1,
+    "items": [
+      {
+        "product": "Gel Pen Set",
+        "category": "Stationery",
+        "quantity": 3,
+        "unit_price": 6.2
+      },
+      {
+        "product": "Desk Organiser",
+        "category": "Stationery",
+        "quantity": 1,
+        "unit_price": 14.0
+      },
+      {
+        "product": "Wireless Mouse",
+        "category": "Electronics",
+        "quantity": 5,
+        "unit_price": 19.5
+      }
+    ]
+  },
+  {
+    "order_id": 1009,
+    "order_date": "2025-02-14",
+    "customer": {
+      "id": "C02",
+      "name": "Jonas Weber",
+      "city": "Hamburg",
+      "country": "Germany"
+    },
+    "shipped_date": "2025-02-16",
+    "discount": 0.1,
+    "items": [
+      {
+        "product": "Footrest",
+        "category": "Home Office",
+        "quantity": 5,
+        "unit_price": 24.0
+      }
+    ]
+  },
+  {
+    "order_id": 1010,
+    "order_date": "2025-02-19",
+    "customer": {
+      "id": "C05",
+      "name": "Marta Ruiz",
+      "city": "Valencia",
+      "country": "Spain"
+    },
+    "shipped_date": "2025-02-23",
+    "discount": null,
+    "items": [
+      {
+        "product": "Monitor Riser",
+        "category": "Home Office",
+        "quantity": 5,
+        "unit_price": 29.9
+      },
+      {
+        "product": "Footrest",
+        "category": "Home Office",
+        "quantity": 4,
+        "unit_price": 24.0
+      }
+    ]
+  },
+  {
+    "order_id": 1011,
+    "order_date": "2025-02-24",
+    "customer": {
+      "id": "C08",
+      "name": "Lukas Meyer",
+      "city": "Munich",
+      "country": "Germany"
+    },
+    "shipped_date": "2025-02-25",
+    "discount": 0.1,
+    "items": [
+      {
+        "product": "Desk Lamp",
+        "category": "Home Office",
+        "quantity": 5,
+        "unit_price": 27.5
+      }
+    ]
+  },
+  {
+    "order_id": 1012,
+    "order_date": "2025-03-03",
+    "customer": {
+      "id": "C03",
+      "name": "Priya Nair",
+      "city": null,
+      "country": "United Kingdom"
+    },
+    "shipped_date": "2025-03-06",
+    "discount": 0.05,
+    "items": [
+      {
+        "product": "USB-C Cable",
+        "category": "Electronics",
+        "quantity": 2,
+        "unit_price": 9.9
+      },
+      {
+        "product": "Laptop Stand",
+        "category": "Electronics",
+        "quantity": 5,
+        "unit_price": 32.0
+      }
+    ]
+  },
+  {
+    "order_id": 1013,
+    "order_date": "2025-03-05",
+    "customer": {
+      "id": "C06",
+      "name": "Daniel Clarke",
+      "city": "Toronto",
+      "country": "Canada"
+    },
+    "shipped_date": "2025-03-07",
+    "discount": 0.1,
+    "items": [
+      {
+        "product": "Wireless Mouse",
+        "category": "Electronics",
+        "quantity": 3,
+        "unit_price": 19.5
+      },
+      {
+        "product": "Laptop Stand",
+        "category": "Electronics",
+        "quantity": 1,
+        "unit_price": 32.0
+      },
+      {
+        "product": "Desk Organiser",
+        "category": "Stationery",
+        "quantity": 5,
+        "unit_price": 14.0
+      }
+    ]
+  },
+  {
+    "order_id": 1014,
+    "order_date": "2025-03-10",
+    "customer": {
+      "id": "C01",
+      "name": "Layla Haddad",
+      "city": "Cairo",
+      "country": "Egypt"
+    },
+    "shipped_date": "2025-03-12",
+    "discount": null,
+    "items": [
+      {
+        "product": "Monitor Riser",
+        "category": "Home Office",
+        "quantity": 3,
+        "unit_price": 29.9
+      }
+    ]
+  },
+  {
+    "order_id": 1015,
+    "order_date": "2025-03-12",
+    "customer": {
+      "id": "C04",
+      "name": "Omar Saleh",
+      "city": "Dubai",
+      "country": "United Arab Emirates"
+    },
+    "shipped_date": "2025-03-15",
+    "discount": 0.05,
+    "items": [
+      {
+        "product": "Laptop Stand",
+        "category": "Electronics",
+        "quantity": 5,
+        "unit_price": 32.0
+      },
+      {
+        "product": "Desk Organiser",
+        "category": "Stationery",
+        "quantity": 4,
+        "unit_price": 14.0
+      }
+    ]
+  },
+  {
+    "order_id": 1016,
+    "order_date": "2025-03-17",
+    "customer": {
+      "id": "C07",
+      "name": "Yasmin Farouk",
+      "city": "Alexandria",
+      "country": "Egypt"
+    },
+    "shipped_date": "2025-03-18",
+    "discount": null,
+    "items": [
+      {
+        "product": "Wireless Mouse",
+        "category": "Electronics",
+        "quantity": 5,
+        "unit_price": 19.5
+      }
+    ]
+  },
+  {
+    "order_id": 1017,
+    "order_date": "2025-03-19",
+    "customer": {
+      "id": "C02",
+      "name": "Jonas Weber",
+      "city": "Hamburg",
+      "country": "Germany"
+    },
+    "shipped_date": "2025-03-23",
+    "discount": 0.05,
+    "items": [
+      {
+        "product": "Notebook A5",
+        "category": "Stationery",
+        "quantity": 2,
+        "unit_price": 4.5
+      },
+      {
+        "product": "USB-C Cable",
+        "category": "Electronics",
+        "quantity": 2,
+        "unit_price": 9.9
+      },
+      {
+        "product": "Gel Pen Set",
+        "category": "Stationery",
+        "quantity": 2,
+        "unit_price": 6.2
+      }
+    ]
+  },
+  {
+    "order_id": 1018,
+    "order_date": "2025-03-24",
+    "customer": {
+      "id": "C05",
+      "name": "Marta Ruiz",
+      "city": "Valencia",
+      "country": "Spain"
+    },
+    "shipped_date": null,
+    "discount": 0.05,
+    "items": [
+      {
+        "product": "Wireless Mouse",
+        "category": "Electronics",
+        "quantity": 1,
+        "unit_price": 19.5
+      },
+      {
+        "product": "Notebook A5",
+        "category": "Stationery",
+        "quantity": 5,
+        "unit_price": 4.5
+      }
+    ]
+  },
+  {
+    "order_id": 1019,
+    "order_date": "2025-03-26",
+    "customer": {
+      "id": "C08",
+      "name": "Lukas Meyer",
+      "city": "Munich",
+      "country": "Germany"
+    },
+    "shipped_date": null,
+    "discount": 0.1,
+    "items": [
+      {
+        "product": "Desk Organiser",
+        "category": "Stationery",
+        "quantity": 2,
+        "unit_price": 14.0
+      }
+    ]
+  },
+  {
+    "order_id": 1020,
+    "order_date": "2025-03-28",
+    "customer": {
+      "id": "C03",
+      "name": "Priya Nair",
+      "city": "Manchester",
+      "country": "United Kingdom"
+    },
+    "shipped_date": null,
+    "discount": null,
+    "items": [
+      {
+        "product": "Wireless Mouse",
+        "category": "Electronics",
+        "quantity": 3,
+        "unit_price": 19.5
+      },
+      {
+        "product": "Desk Organiser",
+        "category": "Stationery",
+        "quantity": 3,
+        "unit_price": 14.0
+      }
+    ]
+  }
+]

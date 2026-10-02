@@ -194,6 +194,9 @@ ul.plain li{margin:4px 0}
 .probgrid{display:grid;gap:8px 18px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));margin:8px 0 0;padding:0;list-style:none}
 .probgrid li{padding-left:22px;position:relative;font-size:.95rem}
 .probgrid li::before{content:'✗';position:absolute;left:0;color:var(--red-d);font-weight:800}
+pre.code{background:var(--canvas);border:2px solid var(--line);border-radius:12px;padding:12px 16px;overflow-x:auto;font:.82rem/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin:10px 0;white-space:pre}
+code{background:var(--canvas);padding:1px 6px;border-radius:6px;font-size:.88em}
+pre.code code{background:none;padding:0}
 
 /* The pipeline card game */
 .game{padding:18px}
@@ -446,39 +449,69 @@ const STAGES = [
 ];
 const STAGE_CHOICES = STAGES.map(s => ({ v: s.v, l: s.n + ' · ' + s.name }));
 
-/* ---- Pipeline map (SVG) ----------------------------------------------------- */
-function mapHtml() {
-  const sel = ui.mapStop, P = [[130, 220], [320, 100], [510, 220], [700, 100], [890, 220]];
-  const stops = STAGES.map((s, i) => {
-    const [x, y] = P[i], on = sel === i;
-    const lbl = s.side === 'front' ? ['WHAT USERS SEE', 140, 'front'] : ['BEHIND THE SCENES', 160, 'back'];
-    const bx = x - lbl[1] / 2;
-    return `<g class="stop ${on ? 'on' : ''}" role="button" tabindex="0" data-act="pbi-stop" data-i="${i}" data-k="stop-${i}" aria-pressed="${on}" aria-label="Component ${s.n}: ${esc(s.name)}">
+/* ---- Interactive maps (SVG): the pipeline and the Get Data journey --------------------- */
+const JOURNEY = [
+  { n: 1, v: 'loc', name: 'Locate the data', icon: '📍', lines: ['Locate', 'the data'], tag: 'WHERE IT LIVES', job: 'Know where the data lives. For a file, decide where it is stored: on your computer, in OneDrive or in SharePoint. For a database, know which server it is on.' },
+  { n: 2, v: 'get', name: 'Get Data', icon: '➕', lines: ['Get', 'Data'], tag: 'HOME TAB', job: 'On the Home tab, select Get Data, then choose the connector: the file type, or the option for your database.' },
+  { n: 3, v: 'con', name: 'Connect', icon: '🔌', lines: ['Connect', ''], tag: 'PATH OR SERVER', job: 'Tell Power BI where to find the data: the file path, or the server and database. Sign in if you are asked.' },
+  { n: 4, v: 'sel', name: 'Select', icon: '☑️', lines: ['Select', ''], tag: 'PREVIEW', job: 'Tick the table(s) you want and check the preview. With a database you can also import with a SQL query, to take only the tables and columns you need.' },
+  { n: 5, v: 'lod', name: 'Load or transform', icon: '⚙️', lines: ['Load or', 'transform'], tag: 'LOAD OR CLEAN', job: 'Load brings the data in as it is. Transform Data opens Power Query so you can clean it first. You can change the source file or the data source settings later.' }
+];
+const MAPS = {
+  pipe: { aria: 'The five components of Power BI, in order', start: '📥 Your data comes in', end: 'Decisions get made ✅', word: 'Component',
+    hint: 'Tap a numbered stop on the map to see what each component does.',
+    legend: [['back', 'Hidden from the end user'], ['front', 'Seen by the end user']],
+    stops: STAGES.map(s => ({ n: s.n, name: s.name, icon: s.icon, lines: s.lines, text: s.job, badge: s.side === 'front' ? ['WHAT USERS SEE', 'front'] : ['BEHIND THE SCENES', 'back'] })) },
+  journey: { aria: 'The five steps of connecting to a data source, in order', start: '📍 You know the data you need', end: 'Data is in your model ✅', word: 'Step',
+    hint: 'Tap a numbered stop on the map to see what happens at each step.',
+    legend: [['front', 'The key action at this step']],
+    stops: JOURNEY.map(s => ({ n: s.n, name: s.name, icon: s.icon, lines: s.lines, text: s.job, badge: [s.tag, 'front'] })) }
+};
+function mapHtml(id) {
+  const M = MAPS[id || 'pipe'], sel = ui.mapStop, P = [[130, 220], [320, 100], [510, 220], [700, 100], [890, 220]];
+  const stops = M.stops.map((s, i) => {
+    const [x, y] = P[i], on = sel === i, bw = Math.round(s.badge[0].length * 7.4) + 28, bx = x - bw / 2;
+    return `<g class="stop ${on ? 'on' : ''}" role="button" tabindex="0" data-act="pbi-stop" data-i="${i}" data-k="stop-${i}" aria-pressed="${on}" aria-label="${M.word} ${s.n}: ${esc(s.name)}">
       <rect class="hit" x="${x - 76}" y="${y - 42}" width="152" height="162" fill="transparent"/><circle cx="${x}" cy="${y}" r="32"/><text class="num" x="${x}" y="${y + 9}" text-anchor="middle">${s.n}</text>
       <text class="lbl" x="${x}" y="${y + 58}" text-anchor="middle">${esc(s.lines[0])}</text><text class="lbl" x="${x}" y="${y + 76}" text-anchor="middle">${esc(s.lines[1])}</text>
-      <rect class="bdg ${lbl[2]}" x="${bx}" y="${y + 86}" width="${lbl[1]}" height="20" rx="10"/><text class="bt" x="${x}" y="${y + 100}" text-anchor="middle">${lbl[0]}</text></g>`;
+      <rect class="bdg ${s.badge[1]}" x="${bx}" y="${y + 86}" width="${bw}" height="20" rx="10"/><text class="bt" x="${x}" y="${y + 100}" text-anchor="middle">${esc(s.badge[0])}</text></g>`;
   }).join('');
-  const s = sel != null ? STAGES[sel] : null;
+  const s = sel != null && M.stops[sel] ? M.stops[sel] : null;
   const panel = s
-    ? `<div class="stagepanel"><h3>${s.icon} ${s.n} · ${esc(s.name)}</h3><p style="margin:0">${esc(s.job)}</p></div>`
-    : `<div class="stagepanel muted">👆 Tap a numbered stop on the map to see what each component does.</div>`;
-  return `<div class="card mapcard"><svg viewBox="0 40 1000 360" role="group" aria-label="The five components of Power BI, in order" xmlns="http://www.w3.org/2000/svg">
+    ? `<div class="stagepanel"><h3>${s.icon} ${s.n} · ${esc(s.name)}</h3><p style="margin:0">${esc(s.text)}</p></div>`
+    : `<div class="stagepanel muted">👆 ${esc(M.hint)}</div>`;
+  return `<div class="card mapcard"><svg viewBox="0 40 1000 360" role="group" aria-label="${esc(M.aria)}" xmlns="http://www.w3.org/2000/svg">
       <path class="trail" d="M130,220 C200,80 260,70 320,100 C400,140 440,220 510,220 C580,220 630,70 700,100 C780,130 830,210 890,220"/>
-      <text class="endlbl" x="40" y="382">📥 Your data comes in</text><text class="endlbl" x="960" y="382" text-anchor="end">Decisions get made ✅</text>${stops}</svg>
-    <div class="maplegend"><span><i class="bdg-key back"></i> Hidden from the end user</span><span><i class="bdg-key front"></i> Seen by the end user</span></div>${panel}</div>`;
+      <text class="endlbl" x="40" y="382">${M.start}</text><text class="endlbl" x="960" y="382" text-anchor="end">${M.end}</text>${stops}</svg>
+    <div class="maplegend">${M.legend.map(l => `<span><i class="bdg-key ${l[0]}"></i> ${esc(l[1])}</span>`).join('')}</div>${panel}</div>`;
 }
 
 /* ---- Units ---------------------------------------------------------------------- */
 const LABS = {
-  pbi: { id: 'pbi', hash: '#/pbi', title: 'Power BI Ecosystem Lab', word: 'Station', stations: [
+  pbi: { id: 'pbi', hash: '#/pbi', icon: '🃏', title: 'Power BI Ecosystem Lab', word: 'Station', meta: 'about 10–15 minutes each in breakout rooms',
+    blurb: 'Why companies moved from spreadsheets to BI, a card game that deals the five components of Power BI into order, and which tool does which job: Desktop, Service or Mobile.', stations: [
     { n: 1, title: 'The big picture' }, { n: 2, title: 'The pipeline card game' }, { n: 3, title: 'Desktop, Service and Mobile' },
     { n: 4, title: 'Is Power BI the right fit?' }, { n: 5, title: 'Lecture checkpoint' }],
     intro: () => `<p class="lead">Before you build anything, see the <strong>whole picture</strong>: why companies moved from spreadsheets to Business Intelligence, how a Power BI project flows from raw data to decisions, and which Power BI tool does which job.</p>
-      <ol class="howto"><li><span><strong>Why BI?</strong> What goes wrong with spreadsheets, and what BI is.</span></li><li><span><strong>Card game:</strong> deal the five components into the right order, then place the tasks.</span></li><li><span><strong>Ecosystem:</strong> Desktop, the online service and the mobile app.</span></li><li><span><strong>Fit check:</strong> an optional discussion on where Power BI fits.</span></li><li><span><strong>Checkpoint:</strong> five quick questions.</span></li></ol>
-      <div class="callout" style="margin-top:16px"><strong>Team play:</strong> one person shares their screen and drives, everyone discusses. Answers are revealed together in the main room. The practice scenarios are written for this course; the product facts come from the course video.</div>` }
+      <ol class="howto"><li><span><strong>Why BI?</strong> What goes wrong with spreadsheets, and what BI is.</span></li><li><span><strong>Card game:</strong> deal the five components into the right order, then place the tasks.</span></li><li><span><strong>Ecosystem:</strong> Desktop, the online service and the mobile app.</span></li><li><span><strong>Fit check:</strong> an optional discussion on where Power BI fits.</span></li><li><span><strong>Checkpoint:</strong> ten quick questions, shared with the connecting-to-data lab.</span></li></ol>
+      <div class="callout" style="margin-top:16px"><strong>Team play:</strong> one person shares their screen and drives, everyone discusses. Answers are revealed together in the main room. The practice scenarios are written for this course; the product facts come from the course video.</div>` },
+  dat: { id: 'dat', hash: '#/dat', icon: '🔌', title: 'Connecting to Data Lab', word: 'Station', meta: 'about 8–15 minutes each in breakout rooms',
+    blurb: 'Walk the Get Data journey, match situations to connectors, turn a JSON file into a table, read an API URL, choose a storage mode and match import errors to their causes.',
+    stations: [{ n: 1, title: 'The Get Data journey' }, { n: 2, title: 'Which connector?' }, { n: 3, title: 'JSON: from list to table' }, { n: 4, title: 'Reading an API URL' }, { n: 5, title: 'Storage modes and import errors' }, { n: 6, title: 'Hands-on lab' }],
+    intro: () => `<p class="lead">You know the whole picture. Now <strong>connect to data</strong>: files, a JSON file, a database and an API, and learn what to do when it goes wrong.</p>
+      <ol class="howto"><li><span><strong>Journey:</strong> the five steps of any connection.</span></li><li><span><strong>Connectors:</strong> match each situation to CSV, Excel, JSON, SQL Server or Web.</span></li><li><span><strong>JSON:</strong> turn a nested file into a flat table.</span></li><li><span><strong>API:</strong> read a URL and connect with the Web connector.</span></li><li><span><strong>Storage and errors:</strong> Import, DirectQuery or Dual, and common import errors.</span></li><li><span><strong>Lab:</strong> connect for real in Power BI Desktop.</span></li></ol>
+      <div class="callout" style="margin-top:16px"><strong>Team play:</strong> one person shares their screen and drives. Answers are revealed together in the main room. The steps and errors come from the course slides; the scenarios are written for this course. Native SQL queries are taught live, without a team activity.</div>` }
 };
 
 const U = (id, st, icon, title, tagline, stage, steps, prompts, fac, extra) => Object.assign({ id, lab: 'pbi', station: st, icon, title, tagline, stage, steps, prompts, fac }, extra || {});
+
+const UD = (id, st, icon, title, tagline, stage, steps, prompts, fac, extra) => U(id, st, icon, title, tagline, stage, steps, prompts, fac, Object.assign({ lab: 'dat' }, extra || {}));
+const SLIDE_NOTE = `<p class="muted small" style="margin:10px 0 0">Based on the course slides “Extract Data From Different Sources”. Practice scenarios are written for this course. Details about JSON files and Web connections are general Power BI knowledge: your facilitator verifies them before teaching.</p>`;
+/* The JSON facts below describe Data Files/sales_orders.json: tests check them against the file. */
+const JSON_FACTS = { orders: 20, lines: 36 };
+const JSON_EXCERPT = {"order_id": 1001, "order_date": "2025-01-06", "customer": {"id": "C02", "name": "Jonas Weber", "city": "Hamburg", "country": "Germany"}, "shipped_date": "2025-01-10", "discount": 0.05, "items": [{"product": "Monitor Riser", "category": "Home Office", "quantity": 1, "unit_price": 29.9}]};
+const COUNTRIES_URL = 'https://restcountries.com/v3.1/all?fields=name,capital,region,population,area';
+const BACKUP_API = 'https://jsonplaceholder.typicode.com/posts?userId=1';
 
 const PROBLEMS = [
   { v: 'man', l: 'Manual work' }, { v: 'stale', l: 'Outdated, static data' }, { v: 'vers', l: 'Many versions' }, { v: 'sec', l: 'Weak security' },
@@ -592,16 +625,200 @@ U('p4', 4, '⚖️', 'Is Power BI the right fit?', 'An optional team discussion:
 { noScore: true, optional: true, peer: ['Does it name a clear audience and a clear need?', 'Is the reason based on the need, not on a tool preference?', 'Would the answer change if the audience used phones?'] }),
 
 /* ================================================================ STATION 5 */
-U('p5', 5, '🧠', 'Lecture checkpoint', 'Five quick questions on what you have learned so far.', 'The whole lecture', () => {
-  const Q = (k, prompt, opts) => ({ t: 'single', k, pts: 20, prompt, opts });
-  return [{ label: 'Five questions', blocks: [
+U('p5', 5, '🧠', 'Lecture checkpoint', 'Ten quick questions on what you have learned today.', 'The whole lecture', () => {
+  const Q = (k, prompt, opts) => ({ t: 'single', k, pts: 10, prompt, opts });
+  return [
+    { label: 'Round 1: the ecosystem', blocks: [
     Q('q1', 'Which Power BI component cleans data: removes duplicates and mistakes and fixes formats?', [O('a', 'Power Query', 1, 'Power Query prepares the data.'), O('b', 'DAX', 0, 'DAX is for calculations and business logic.'), O('c', 'Visuals', 0, 'Visuals are what the end user sees.'), O('d', 'The mobile app', 0, 'The mobile app is for viewing reports.')]),
     Q('q2', 'What is the data model for?', [O('a', 'Structuring and organising the data by connecting the tables, so results are accurate and fast', 1, 'This is the second component.'), O('b', 'Cleaning mistakes out of a column', 0, 'That is Power Query.'), O('c', 'Choosing chart colours', 0, 'That is part of the visuals.'), O('d', 'Emailing the report', 0, 'Sharing happens through publishing.')]),
     Q('q3', 'What is DAX used for?', [O('a', 'Calculations and math that build the business logic', 1, 'DAX builds the logic the visuals need.'), O('b', 'Hosting reports in the cloud', 0, 'That is the Service.'), O('c', 'Installing Desktop', 0, 'Not what DAX does.'), O('d', 'Importing a file', 0, 'Not what DAX does.')]),
     Q('q4', 'Where do end users usually open a published report in their browser?', [O('a', 'The Power BI Service', 1, 'Published reports live in the Service.'), O('b', 'Power BI Desktop', 0, 'Desktop is where you build.'), O('c', 'Excel only', 0, 'Not the video’s answer.'), O('d', 'A .pbix file on your desk', 0, 'The .pbix file is the local build file.')]),
-    Q('q5', 'Which statement about Power BI Desktop is true, according to the video?', [O('a', 'It is installed on a PC, is Windows-only, and stores the whole project in one .pbix file', 1, 'It is where most of the building happens.'), O('b', 'It runs only in a browser', 0, 'That describes the Service.'), O('c', 'It is only for phones and tablets', 0, 'That describes the mobile app.'), O('d', 'It cannot hold data', 0, 'The .pbix file includes the data.')])] }];
+    Q('q5', 'Which statement about Power BI Desktop is true, according to the video?', [O('a', 'It is installed on a PC, is Windows-only, and stores the whole project in one .pbix file', 1, 'It is where most of the building happens.'), O('b', 'It runs only in a browser', 0, 'That describes the Service.'), O('c', 'It is only for phones and tablets', 0, 'That describes the mobile app.'), O('d', 'It cannot hold data', 0, 'The .pbix file includes the data.')])] },
+    { label: 'Round 2: connecting to data', blocks: [
+    Q('q6', 'Which storage mode leaves the data at the data source?', [O('a', 'DirectQuery', 1, 'DirectQuery connects directly to the source and does not cache the data.'), O('b', 'Import', 0, 'Import creates a local copy of the data.'), O('c', 'Manual refresh', 0, 'Not a storage mode.'), O('d', 'The .pbix file', 0, 'A file, not a storage mode.')]),
+    Q('q7', 'Which technology improves performance by generating a single query statement to retrieve and transform source data?', [O('a', 'Query folding', 1, 'Steps in Power Query are translated into one native query that runs on the source.'), O('b', 'Performance Analyzer', 0, 'It diagnoses slow reports; it does not generate the query.'), O('c', 'Dual storage mode', 0, 'Dual mixes imported and queried tables.'), O('d', 'Conditional columns', 0, 'A transformation, not a performance technology.')]),
+    Q('q8', 'What type of import error might leave a column blank?', [O('a', 'A data type error', 1, 'Power BI misread the data type, so values can come through blank.'), O('b', 'Could not find file', 0, 'The file itself is missing.'), O('c', 'Query timeout', 0, 'The source was too busy.'), O('d', 'Timeout expired', 0, 'You pulled more data than your organisation allows.')]),
+    Q('q9', 'Which query language do you use to extract data from Microsoft SQL Server?', [O('a', 'T-SQL', 1, 'T-SQL is the query language of SQL Server.'), O('b', 'DAX', 0, 'DAX is for calculations in the Power BI model.'), O('c', 'M', 0, 'M is the language behind Power Query steps.'), O('d', 'JSON', 0, 'JSON is a data format, not a query language.')]),
+    Q('q10', 'You open a JSON file in Power Query and see a List. What is the next step?', [O('a', 'Convert it to a table, then expand the records into columns', 1, 'A list of records becomes a table you can expand.'), O('b', 'Load it as it is and build charts', 0, 'A list is not yet a table of columns.'), O('c', 'Delete the query and use a CSV instead', 0, 'JSON files can be loaded and expanded.'), O('d', 'Write a SQL query', 0, 'SQL is for databases.')])] }
+  ];
 }, ['Which question did your team debate the most?', 'Which topic from today do you want to revisit?', 'What would you add to this checkpoint?'],
-['Use wrong answers to decide what to revisit before moving on to connecting to data.', 'This checkpoint covers the ecosystem only. Questions for the rest of Lecture 1 will be added as its activities are built.'])
+['Use wrong answers to decide what to revisit before the next session.', 'Round 1 comes from the course video; round 2 uses the course slides (questions 6 to 9) and one question written for this course (question 10).']),
+
+/* ================================================================ CONNECTING TO DATA LAB */
+UD('d1', 1, '🧭', 'The Get Data Journey', 'The five steps of connecting to any data source, and how files and databases differ.', 'Connecting to data', () => [
+  { label: 'Walk the journey', blocks: [
+    { t: 'html', html: `<p class="lead">Every connection in Power BI Desktop follows the same journey, whether the data is a file or a database. <strong>Tap each stop</strong> to see what happens there.</p>` },
+    { t: 'map', map: 'journey' },
+    { t: 'html', html: SLIDE_NOTE }] },
+  { label: 'Deal the journey', blocks: [
+    { t: 'html', html: `<div class="callout small" style="margin-bottom:12px"><strong>How to play:</strong> tap a card in your hand, then tap the numbered slot where it belongs. Tap a filled slot to take the card back.</div>` },
+    { t: 'order', k: 'path', pts: 60, start: '📍 You know the data you need', end: 'Data is in your model ✅', prompt: 'Deal the five steps in the order you take them when you connect to a data source.',
+      cards: JOURNEY.map(s => ({ v: s.v, t: s.name, icon: s.icon, job: s.job })), answer: JOURNEY.map(s => s.v) }] },
+  { label: 'File or database?', blocks: [
+    { t: 'grid', k: 'route', pts: 40, cards: true, prompt: 'Which kind of source does each statement describe?', choices: [{ v: 'file', l: 'Flat file' }, { v: 'db', l: 'Relational database' }, { v: 'both', l: 'Both' }], items: [
+      G('r1', 'It contains one data table with a consistent row structure.', 'file', 'Flat files hold a single table with a consistent row structure.'),
+      G('r2', 'You can write a SQL query to take only the tables and columns you need.', 'db', 'Importing with a SQL query is an option for relational databases.'),
+      G('r3', 'Examples are comma-separated (.csv) files, delimited text and Excel workbooks.', 'file', 'These are the flat-file types in the slides.'),
+      G('r4', 'An example is Microsoft SQL Server.', 'db', 'SQL Server is a relational database.'),
+      G('r5', 'You start on the Home tab and select Get Data.', 'both', 'Every connection starts with Get Data.'),
+      G('r6', 'You tick the table(s) you want, which activates Load and Transform Data.', 'both', 'Both routes end in the same choice: load, or transform first.'),
+      G('r7', 'If the file moves during development, you update its location.', ['file', 'both'], 'The slides list this under flat files; changing a source applies to both, so both is accepted.'),
+      G('r8', 'You can change the connection settings after the data is loaded.', ['db', 'both'], 'The slides list this under databases; it applies to both, so both is accepted.')] }] }
+], ['Which step do you think beginners skip, and what goes wrong?', 'Why is “Select” the step to slow down on?', 'Which route (file or database) would you trust more for next month’s report, and why?'],
+['The five steps follow the course slides for flat files and relational sources. “Sign in if asked” is general knowledge to verify.', 'The flat-file warning from the slides is worth saying aloud: renaming or deleting columns in the source can break the report model.', 'Items 7 and 8 accept two answers on purpose.']),
+
+UD('d2', 2, '🔎', 'Which Connector?', 'Match each situation to the right connector, then predict what the preview shows.', 'Connecting to data', () => [
+  { label: 'Match the situation', blocks: [
+    { t: 'grid', k: 'conn', pts: 70, cards: true, prompt: 'Which connector would you use for each situation?', choices: [{ v: 'csv', l: 'CSV' }, { v: 'xls', l: 'Excel' }, { v: 'json', l: 'JSON' }, { v: 'sql', l: 'SQL Server' }, { v: 'web', l: 'Web (API)' }], items: [
+      G('c1', 'The finance team exports a monthly list as a plain, comma-separated text file.', 'csv', 'Comma-separated text is a CSV file.'),
+      G('c2', 'A colleague sends a workbook with a Sales sheet and a Targets sheet.', 'xls', 'A workbook with sheets is an Excel file.'),
+      G('c3', 'A web shop exports its orders as nested records in a .json file.', 'json', 'A .json file uses the JSON connector.'),
+      G('c4', 'The company’s orders live in a SQL Server database maintained by IT.', 'sql', 'A database uses its own connector.'),
+      G('c5', 'A public service returns country data at a web address, with no file to download.', 'web', 'Data served at a URL uses the Web connector.'),
+      G('c6', 'A one-off export of survey answers, saved as .csv.', 'csv', 'A .csv file is a flat file.'),
+      G('c7', 'A manager’s budget workbook with three tabs.', 'xls', 'A workbook is an Excel file.'),
+      G('c8', 'A mobile app logs events and you receive them as a .json export.', 'json', 'A .json file uses the JSON connector.'),
+      G('c9', 'A service exposes the latest exchange rates at a URL.', 'web', 'Data at a URL uses the Web connector.'),
+      G('c10', 'The sales system holds millions of rows, and you want a live link to it.', 'sql', 'A large database is queried through its connector, and DirectQuery can leave the data at the source.')] }] },
+  { label: 'What will you see?', blocks: [
+    { t: 'single', k: 's1', pts: 10, prompt: 'You connect to a workbook with a Sales sheet and a Targets sheet. What do you do in the preview?', opts: [
+      O('a', 'Tick the table(s) you want to import: this activates Load and Transform Data', 1, 'You choose what to import, then load or transform.'),
+      O('b', 'Nothing: Power BI loads every sheet automatically', 0, 'You choose which tables to import.'),
+      O('c', 'Type a SQL query', 0, 'SQL queries are for databases.'),
+      O('d', 'Convert the workbook to a database first', 0, 'Not needed.')] },
+    { t: 'single', k: 's2', pts: 10, prompt: 'You need only three columns from a very large SQL Server table. What is a good option?', opts: [
+      O('a', 'Import with a SQL query that selects only those columns', 1, 'A SQL query lets you take only the tables and columns you need.'),
+      O('b', 'Import the whole table and delete columns later', 0, 'It is better to process as much as possible at the source.'),
+      O('c', 'Export the table to CSV first', 0, 'An extra step you do not need.'),
+      O('d', 'Use the Excel connector', 0, 'Wrong connector.')] },
+    { t: 'single', k: 's3', pts: 10, prompt: 'You open a JSON file and Power Query shows a List. What is the next step?', opts: [
+      O('a', 'Convert it to a table, then expand the records into columns', 1, 'A list of records becomes a table you can expand.'),
+      O('b', 'Load it as it is and start building charts', 0, 'A list is not yet a table with columns.'),
+      O('c', 'Delete the query', 0, 'The data is fine: it only needs shaping.'),
+      O('d', 'Change the source to CSV', 0, 'You cannot change a file’s format that way.')] }] }
+], ['Which situation was hardest to place, and what decided it?', 'When would you choose a database over a file?', 'What could go wrong if you pick the wrong connector?'],
+['The connectors and the Excel and SQL preview behaviour come from the course slides. The situations are written for this course.', 'The JSON preview (a List) is general knowledge to verify in your Desktop version.']),
+
+UD('d3', 3, '🧩', 'JSON: From List to Table', 'Turn a nested JSON file into a flat table, step by step.', 'Connecting to data', () => [
+  { label: 'Look at the file', blocks: [{ t: 'html', html: `<p class="lead">Your lab file is <code>Data Files/sales_orders.json</code>: fictional web-store orders, <strong>${JSON_FACTS.orders} orders</strong> with <strong>${JSON_FACTS.lines} order lines</strong>. Here is the first order:</p>
+    <pre class="code" tabindex="0" aria-label="The first order in the JSON file">${esc(JSON.stringify(JSON_EXCERPT, null, 2))}</pre>
+    <div class="card"><h3>How Power Query reads it</h3><div style="overflow-x:auto"><table class="tbl"><thead><tr><th>In the file</th><th>Power Query shows</th><th>What you do</th></tr></thead><tbody>
+      <tr><td>The whole file, <code>[ … ]</code></td><td>A <strong>List</strong></td><td>Convert it to a table</td></tr>
+      <tr><td>Each order, <code>{ … }</code></td><td>A <strong>Record</strong></td><td>Expand it into columns</td></tr>
+      <tr><td><code>customer</code>, a record inside the order</td><td>A Record column</td><td>Expand it into columns</td></tr>
+      <tr><td><code>items</code>, a list inside the order</td><td>A List column</td><td>Expand it to new rows, then expand the records</td></tr>
+      <tr><td>A missing or <code>null</code> value</td><td>null</td><td>Leave it, or handle it later</td></tr></tbody></table></div></div>
+    <p class="muted small">Written for this course from the file in the repository. The menu names can differ between Power BI versions: your facilitator verifies them.</p>` }] },
+  { label: 'Order the steps', blocks: [
+    { t: 'html', html: `<div class="callout small" style="margin-bottom:12px"><strong>How to play:</strong> tap a card, then tap the numbered slot where it belongs.</div>` },
+    { t: 'order', k: 'json', pts: 50, start: '📄 A JSON file', end: 'A clean table ✅', prompt: 'Deal the five steps in the order you follow to load this JSON file.', cards: [
+      { v: 'open', t: 'Open the file', icon: '📄', job: 'Home > Get data > JSON, then choose the file. Power Query opens on a List.' },
+      { v: 'totable', t: 'Convert to a table', icon: '🔁', job: 'Convert the List to a Table. Each row holds one Record: one per order.' },
+      { v: 'rec', t: 'Expand the records', icon: '↔️', job: 'Expand the Record column to get the order fields. The customer and items columns come through.' },
+      { v: 'nested', t: 'Expand customer and items', icon: '🧩', job: 'Expand customer (a record) into columns, and items (a list) to new rows, then expand the item fields.' },
+      { v: 'types', t: 'Fix types and apply', icon: '🛠️', job: 'Change the date columns to Date and the amounts to numbers, then Close & Apply.' }],
+      answer: ['open', 'totable', 'rec', 'nested', 'types'] }] },
+  { label: 'Predict the table', blocks: [
+    { t: 'single', k: 'q1', pts: 20, prompt: `The file holds ${JSON_FACTS.orders} orders and ${JSON_FACTS.lines} order lines. After you expand the items list to new rows, how many rows does the table have?`, opts: [
+      O('a', `${JSON_FACTS.lines} rows: one per order line`, 1, 'Each order line becomes its own row; the order fields repeat.'),
+      O('b', `${JSON_FACTS.orders} rows`, 0, 'That is the number of orders, before the items are expanded.'),
+      O('c', `${JSON_FACTS.orders + JSON_FACTS.lines} rows`, 0, 'Orders and lines are not added together.'),
+      O('d', '1 row', 0, 'The table keeps every order line.')] },
+    { t: 'single', k: 'q2', pts: 15, prompt: 'Order 1005 has no discount field at all, and several other orders have a discount of null. What does the table show for them?', opts: [
+      O('a', 'null (an empty value) for all of them', 1, 'Power Query fills missing fields with null.'),
+      O('b', 'An error for the order with no discount field', 0, 'A missing field becomes null, not an error.'),
+      O('c', 'A discount of 0', 0, 'Power Query does not invent a zero.'),
+      O('d', 'Those orders disappear', 0, 'The orders stay in the table.')] },
+    { t: 'single', k: 'q3', pts: 15, prompt: 'The date columns hold text such as 2025-01-06. What should you do?', opts: [
+      O('a', 'Change the column type to Date in Power Query', 1, 'Dates arrive as text: set the right data type.'),
+      O('b', 'Leave them as text: charts handle text dates fine', 0, 'Text dates will not behave like dates.'),
+      O('c', 'Delete the date columns', 0, 'You would lose the information.'),
+      O('d', 'Retype every date by hand', 0, 'Change the type instead.')] }] }
+], ['Which step would you forget, and what would you see?', 'Why do the order fields repeat on each order line?', 'What other nested data have you met at work?'],
+['The file is in the Data Files folder of the repository: 20 orders, 36 order lines, 1 order with no discount field (1005), 9 with a null discount, 3 not shipped yet, 1 customer with a null city (order 1012).', 'The Power Query behaviour is general Power BI knowledge to verify in your Desktop version: run the demo once before class.', 'This is the same shape of work as the API in the next activity.']),
+
+UD('d4', 4, '🌐', 'Reading an API URL', 'Split a web address into its parts, and connect to open data with the Web connector.', 'Connecting to data', () => [
+  { label: 'Read the URL', blocks: [{ t: 'html', html: `<p class="lead">An <strong>API</strong> serves data at a web address. In Power BI you connect with the <strong>Web</strong> connector. Our demo uses an open API with country data:</p>
+    <pre class="code" tabindex="0" aria-label="The demo URL">${esc(COUNTRIES_URL)}</pre>
+    <div class="prodgrid">
+      <div class="prod"><strong>Base address</strong><span><code>https://restcountries.com</code>: the service you talk to.</span></div>
+      <div class="prod"><strong>Path</strong><span><code>/v3.1/all</code>: what you ask for.</span></div>
+      <div class="prod"><strong>Query parameter</strong><span><code>?fields=name,capital,…</code>: the options. Here: only these fields.</span></div></div>
+    <p>The answer comes back as <strong>JSON</strong>, so you shape it exactly like the JSON file: convert to a table, then expand. Because the service is open, no account is needed.</p>
+    <p class="muted small">Written for this course. The URL and the fields the service returns are not tested here: your facilitator runs the URL once in Power BI Desktop before class. A backup practice service is ${esc(BACKUP_API)}.</p>` }] },
+  { label: 'Split the URL', blocks: [
+    { t: 'grid', k: 'url', pts: 40, cards: true, prompt: 'Which part of a web address is each piece?', choices: [{ v: 'base', l: 'Base address' }, { v: 'path', l: 'Path' }, { v: 'param', l: 'Query parameter' }], items: [
+      G('u1', 'https://restcountries.com', 'base', 'The service you connect to.'),
+      G('u2', '/v3.1/all', 'path', 'What you ask the service for.'),
+      G('u3', 'fields=name,capital,population', 'param', 'An option after the question mark.'),
+      G('u4', 'https://jsonplaceholder.typicode.com', 'base', 'The service you connect to.'),
+      G('u5', '/posts', 'path', 'What you ask the service for.'),
+      G('u6', 'userId=1', 'param', 'An option after the question mark.')] }] },
+  { label: 'Check your understanding', blocks: [
+    { t: 'single', k: 'q1', pts: 20, prompt: 'The API returns JSON. What do you do next in Power Query?', opts: [
+      O('a', 'The same as for a JSON file: convert to a table, then expand the records and lists', 1, 'The shape of the work is the same.'),
+      O('b', 'Load it as it is', 0, 'It still needs shaping.'),
+      O('c', 'Write a SQL query', 0, 'SQL is for databases.'),
+      O('d', 'Nothing: APIs always return finished tables', 0, 'The data usually needs expanding.')] },
+    { t: 'single', k: 'q2', pts: 20, prompt: 'Which part of the URL do you change to ask for different fields?', opts: [
+      O('a', 'The query parameter after the question mark', 1, 'Parameters carry the options.'),
+      O('b', 'The base address', 0, 'That changes which service you reach.'),
+      O('c', 'The https:// at the start', 0, 'That is the protocol.'),
+      O('d', 'Nothing: the fields are fixed', 0, 'This service lets you choose them.')] },
+    { t: 'single', k: 'q3', pts: 20, prompt: 'The service is open and needs no account. How do you sign in when Power BI asks?', opts: [
+      O('a', 'Anonymously: no credentials are needed', 1, 'An open service does not need a sign-in.'),
+      O('b', 'With your Windows account', 0, 'The service does not know your Windows account.'),
+      O('c', 'By creating a new database', 0, 'Unrelated.'),
+      O('d', 'You cannot connect to it', 0, 'You can: it is open.')] }] }
+], ['Which part of a URL would you change most often?', 'What could go wrong if the service changes its URL?', 'Why does this feel like the JSON file?'],
+['The URL parts and the “Anonymous” sign-in are general knowledge, written for this course: verify them in your Desktop version.', 'Homework: connecting to the Meteostat API. Its documentation says the JSON API needs an API key, so it adds authentication that today’s open API does not.', 'If the countries service is unavailable, use the backup practice URL.']),
+
+UD('d5', 5, '⚙️', 'Storage Modes and Import Errors', 'Choose Import, DirectQuery or Dual for the need, and match common errors to their causes.', 'Connecting to data', () => [
+  { label: 'Three storage modes', blocks: [{ t: 'html', html: `<p class="lead">When you connect, you also choose <strong>how Power BI stores the data</strong>. Importing is the most common method.</p>
+    <div class="prodgrid">
+      <div class="prod"><span class="pi" aria-hidden="true">📥</span><strong>Import</strong><span>Creates a local copy of the data. It is stored in the Power BI file and published with the report.</span></div>
+      <div class="prod"><span class="pi" aria-hidden="true">🔗</span><strong>DirectQuery</strong><span>A direct connection to the source. No data is cached, so you always see the latest data.</span></div>
+      <div class="prod"><span class="pi" aria-hidden="true">🔀</span><strong>Dual (composite)</strong><span>Some data is imported and other data is queried directly. You can set the mode table by table.</span></div></div>
+    <div class="card"><h3>What decides it</h3><ul class="plain"><li><strong>Security:</strong> some organisations do not allow importing data.</li><li><strong>Size:</strong> importing a very large dataset can cause performance problems.</li></ul>
+      <h3 style="margin-top:14px">Faster loading</h3><ul class="plain"><li>Process as much data as you can in the original source.</li><li>Use native SQL queries to bring in only what you need.</li><li>Query folding runs your Power Query steps on the source server as one native query.</li></ul></div>
+    <p class="muted small" style="margin:10px 0 0">From the course slides “Extract Data From Different Sources”. The scenarios in the next steps are written for this course.</p>` }] },
+  { label: 'Choose the mode', blocks: [
+    { t: 'grid', k: 'mode', pts: 50, cards: true, prompt: 'Which storage mode fits each situation?', choices: [{ v: 'imp', l: 'Import' }, { v: 'dq', l: 'DirectQuery' }, { v: 'dual', l: 'Dual (a mix)' }], items: [
+      G('m1', 'A small CSV of last month’s sales that nobody needs live.', 'imp', 'A small, static dataset is easy to import.'),
+      G('m2', 'Executives must always see the very latest figures in the database.', 'dq', 'DirectQuery always queries the latest data.'),
+      G('m3', 'Company policy does not allow copying data out of the source system.', 'dq', 'Some organisations restrict importing: DirectQuery leaves the data at the source.'),
+      G('m4', 'A huge table is too big to import comfortably, but a small lookup table is fine to import.', 'dual', 'A mix: import some tables and query others directly.'),
+      G('m5', 'A small Excel file that is updated once a week.', 'imp', 'A small file is easy to import and refresh.'),
+      G('m6', 'Importing the full table makes the report slow, because the dataset is very large.', ['dq', 'dual'], 'Large datasets can create bottlenecks when imported: DirectQuery or a mix both address this.')] }] },
+  { label: 'Match the error', blocks: [
+    { t: 'grid', k: 'err', pts: 50, cards: true, prompt: 'Which import error does each situation describe?', choices: [{ v: 'qt', l: 'Query timeout' }, { v: 'te', l: 'Timeout expired' }, { v: 'cfd', l: 'Couldn’t find data' }, { v: 'cff', l: 'Could not find file' }, { v: 'dte', l: 'Data type error' }], items: [
+      G('e1', 'Many people are querying the same data at once and the hardware is stretched.', 'qt', 'Hardware resources are constrained by concurrent users.'),
+      G('e2', 'You tried to pull more data than your organisation’s policies allow.', 'te', 'You pulled too much data.'),
+      G('e3', 'Power BI expected the Excel data to be formatted as a table, but it is not.', 'cfd', 'Power BI expects data formatted as a table from Excel.'),
+      G('e4', 'A colleague moved the file to another folder, and its permissions changed.', 'cff', 'The file moved, or its permissions changed.'),
+      G('e5', 'A column shows blank values because Power BI misread the data type.', 'dte', 'A data type error can leave a column blank.')] }] }
+], ['Which storage mode would your company’s security team insist on?', 'What would you check first when a refresh fails?', 'Where could you reduce the data before it ever reaches Power BI?'],
+['Storage modes, performance tips and the five errors come from the course slides. The scenarios are written for this course.', 'Item 6 accepts two answers on purpose.', 'Query folding is mentioned here only briefly; there is a checkpoint question on it.']),
+
+UD('d6', 6, '🧪', 'Hands-On Lab: Connect It Yourself', 'Connect to files, the JSON file and the API in Power BI Desktop, and note what goes wrong.', 'Hands-on', () => [
+  { label: 'Your lab', blocks: [{ t: 'html', html: `<p class="lead">Time to connect for real, in Power BI Desktop. Work through the sources below, with one person sharing their screen.</p>
+    <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Source</th><th>Where it is</th><th>What to check</th></tr></thead><tbody>
+      <tr><td><strong>CSV file</strong></td><td>The file your instructor shares</td><td>The preview shows a table. Load it.</td></tr>
+      <tr><td><strong>Excel file</strong></td><td>The file your instructor shares</td><td>You can tick the sheet(s) you want.</td></tr>
+      <tr><td><strong>JSON file</strong></td><td><code>Data Files/sales_orders.json</code> in the repository</td><td>${JSON_FACTS.lines} rows, one per order line, with dates as Date.</td></tr>
+      <tr><td><strong>Web (API)</strong></td><td><code>${esc(COUNTRIES_URL)}</code></td><td>A table with one row per country, after you expand the columns.</td></tr>
+      <tr><td><strong>SQL Server and native queries</strong></td><td>Guided by your instructor</td><td>Your instructor explains the server details.</td></tr></tbody></table></div>
+    <p class="muted small" style="margin:10px 0 0">Confirm the loaded data in Data view: no visuals yet. Written for this course; the API URL is run once by your facilitator before class.</p>` }] },
+  { label: 'Tick them off', blocks: [
+    { t: 'checks', k: 'done', prompt: 'Tick each connection your team completed.', items: [
+      { v: 'csv', t: 'CSV file loaded' }, { v: 'xls', t: 'Excel file loaded, with the sheet(s) I chose' }, { v: 'json', t: 'JSON file shaped into a table', d: `Expect ${JSON_FACTS.lines} rows.` },
+      { v: 'web', t: 'API connected with the Web connector', d: 'Expand the columns until you have a flat table.' }, { v: 'sql', t: 'SQL Server connected (with the instructor)' }] }] },
+  { label: 'What happened?', blocks: [
+    { t: 'text', k: 'longest', prompt: 'Which step took the longest, and why?', ph: 'The slowest step was…' },
+    { t: 'text', k: 'error', prompt: 'Describe an error or surprise you met. What did the message say, and how did you fix it (or what will you try)?', ph: 'The error said…' }] }
+], ['Which source was easiest to connect, and why?', 'Which error message would you want to search for help on first?', 'What did expanding the JSON and the API data have in common?'],
+['Unscored: free text is shared for peer review.', 'Make sure every team has the CSV and Excel files and the repository’s Data Files folder before the lab.', 'Native SQL queries and SQL Server details are yours to teach: there is no team activity for them.'],
+{ noScore: true, peer: ['Does it quote the error message?', 'Is the fix a cause, not a guess?', 'Would the next student know what to try?'] })
 ];
 
 /* ==========================================================================
@@ -677,7 +894,7 @@ function orderHtml(b, u) {
       <span class="onum" aria-hidden="true">${i + 1}</span><span>${c ? `<span aria-hidden="true">${c.icon}</span> ${esc(c.t)}` : 'Place a card'}</span></button>`; }).join('');
   const cards = hand.map(c => `<button type="button" class="pk ${sel === c.v ? 'sel' : ''}" data-act="pbi-card" data-b="${b.k}" data-v="${c.v}" data-k="card-${b.k}-${c.v}" aria-pressed="${sel === c.v}"><span class="pi" aria-hidden="true">${c.icon}</span>${esc(c.t)}</button>`).join('');
   return `<div class="card game"><h3>${esc(b.prompt)}</h3>
-    <div class="endcap"><span>📥 Data comes in</span><span>Decisions get made ✅</span></div>
+    <div class="endcap"><span>${b.start || '📥 Data comes in'}</span><span>${b.end || 'Decisions get made ✅'}</span></div>
     <div class="track" role="group" aria-label="The pipeline, first to last">${slots}</div>
     <div class="hand" role="group" aria-label="Your hand of cards" aria-live="polite">${cards || '<span class="empty">All cards are placed. Check the order, then go on.</span>'}</div>
     <p class="muted small" style="margin:8px 0 0">${sel ? 'Card selected: now tap a numbered slot.' : 'Tap a card to pick it up.'} Placed: ${used.length} of ${n}.</p></div>`;
@@ -686,8 +903,9 @@ function orderHtml(b, u) {
 function blkPlay(b, u) {
   switch (b.t) {
     case 'html': return typeof b.html === 'function' ? b.html.call(currentUnit) : b.html;
-    case 'map': return mapHtml();
+    case 'map': return mapHtml(b.map);
     case 'order': return orderHtml(b, u);
+    case 'checks': { const a = u.a[b.k] || {}; return `<div class="card"><h3>${esc(b.prompt)}</h3><ul class="checklist">${b.items.map(it => `<li><label class="chk ${a[it.v] ? 'on' : ''}"><input type="checkbox" data-kf="${b.k}" data-kt="checks" data-ki="${it.v}" data-k="c-${b.k}-${it.v}" ${a[it.v] ? 'checked' : ''}><span><strong>${esc(it.t)}</strong>${it.d ? `<br><span class="muted small">${esc(it.d)}</span>` : ''}</span></label></li>`).join('')}</ul></div>`; }
     case 'text': return `<div class="card"><label class="tlabel" for="t-${b.k}"><strong>${esc(b.prompt)}</strong></label><textarea id="t-${b.k}" data-kf="${b.k}" data-kt="text" placeholder="${esc(b.ph || '')}">${esc(u.a[b.k] || '')}</textarea></div>`;
     case 'single': {
       const sel = u.a[b.k], o = b.fixed ? range(b.opts.length) : ord(u, b.k, b.opts.length);
@@ -716,7 +934,8 @@ function optsReveal(opts, picked) {
 function blkReveal(b, u) {
   const a = u.a[b.k];
   switch (b.t) {
-    case 'map': return mapHtml();
+    case 'map': return mapHtml(b.map);
+    case 'checks': { const a = u.a[b.k] || {}; return `<div class="card"><h3>${esc(b.prompt)}</h3><ul class="plain">${b.items.map(it => `<li>${a[it.v] ? '✅' : '⬜'} ${esc(it.t)}</li>`).join('')}</ul></div>`; }
     case 'order': {
       const m = a || [], cardOf = v => b.cards.find(c => c.v === v);
       return `<div class="card"><h3>${esc(b.prompt)}</h3><div style="overflow-x:auto"><table class="tbl"><thead><tr><th>#</th><th>Your card</th><th>Best answer</th><th>Its job</th></tr></thead><tbody>${b.answer.map((v, i) => { const ok = m[i] === v, mine = m[i] && cardOf(m[i]);
@@ -743,21 +962,18 @@ function overallProgress() {
   return { d: us.filter(x => uOf(x.id).submitted).length, n: us.length };
 }
 function viewHub() {
-  const us = labUnits('pbi'), done = us.filter(x => uOf(x.id).submitted).length;
+  const cards = Object.values(LABS).map(L => {
+    const us = labUnits(L.id), done = us.filter(x => uOf(x.id).submitted).length, opt = us.filter(x => x.optional).length;
+    return `<article class="card case-card"><span class="ico" aria-hidden="true">${L.icon}</span><h3>${esc(L.title)}</h3><p class="muted">${esc(L.blurb)}</p>
+      <p class="small muted">${us.length} activities${opt ? ' (' + opt + ' optional)' : ''} · ${esc(L.meta)}</p>
+      <div class="foot"><span class="chip ${done === us.length ? 'green' : 'gold'}">${done} of ${us.length} submitted</span>
+        <a class="btn primary" href="${L.hash}">${done || us.some(x => unitStatus(x) !== 'new') ? 'Continue' : 'Start'} →</a></div></article>`;
+  }).join('');
   return `<section class="hero"><div class="pill"><h1 tabindex="-1">Power BI · Lecture 1</h1></div><p>${COURSE} · interactive team activities</p></section>
   <div class="hubnav"><a class="btn primary" href="#/agenda">📅 Today’s agenda</a><a class="btn" href="#/wrapup">🏁 Wrap-up and homework</a></div>
   <h2>Activities</h2>
-  <div class="grid">
-    <article class="card case-card">
-      <span class="ico" aria-hidden="true">🃏</span>
-      <h3>Power BI Ecosystem Lab</h3>
-      <p class="muted">Why companies moved from spreadsheets to BI, a card game that deals the five components of Power BI into order, and which tool does which job: Desktop, Service or Mobile.</p>
-      <p class="small muted">${us.length} activities (one optional) · about 10–15 minutes each in breakout rooms</p>
-      <div class="foot"><span class="chip ${done === us.length ? 'green' : 'gold'}">${done} of ${us.length} submitted</span>
-        <a class="btn primary" href="#/pbi">${done || us.some(x => unitStatus(x) !== 'new') ? 'Continue' : 'Start'} →</a></div>
-    </article>
-  </div>
-  <p class="muted small" style="margin-top:18px">More activities will appear here as the rest of Lecture 1 is built: the interface tour, project setup and connecting to data.</p>`;
+  <div class="grid">${cards}</div>
+  <p class="muted small" style="margin-top:18px">The interface tour, project setup and native SQL queries are taught live, without a team activity.</p>`;
 }
 function labMenu(lab) {
   const L = LABS[lab], units = labUnits(lab), tot = labTotals(lab), subm = units.filter(x => uOf(x.id).submitted);
@@ -854,17 +1070,17 @@ const AGENDA = [
   { time: '0:35', min: 15, i: '🧰', t: 'Desktop, Service and Mobile', b: ['Build in Desktop, publish to the Service, view on any device', 'What lives in a .pbix file'], links: [{ t: 'Desktop, Service or Mobile?', href: '#/pbi/p3/1', lab: 'pbi', ids: ['p3'] }] },
   { time: '0:50', min: 20, i: '🖥️', t: 'Install and interface tour', live: true, b: ['Install Power BI Desktop', 'Canvas, ribbon, fields pane and visualisations pane; organising pages and visuals'] },
   { time: '1:10', min: 10, i: '🗂️', t: 'Project setup: .pbip and Git', live: true, b: ['What the Power BI Project folder contains', 'Why it enables version control, and committing the first project'] },
-  { time: '1:20', min: 20, i: '🔌', t: 'Connecting to data I', live: true, b: ['Flat files: CSV, multi-sheet Excel, JSON', 'Relational databases and connection settings', 'Native SQL queries to extract only what you need'] },
+  { time: '1:20', min: 20, i: '🔌', t: 'Connecting to data I', live: true, b: ['Flat files: CSV, multi-sheet Excel, JSON', 'Relational databases and connection settings', 'Native SQL queries to extract only what you need (taught live)'], links: [{ t: 'The Get Data Journey', href: '#/dat/d1/1', ids: ['d1'] }, { t: 'Which connector?', href: '#/dat/d2/1', ids: ['d2'] }] },
   { time: '1:40', min: 15, i: '☕', t: 'Break', brk: true, b: ['15 minutes. Stretch, hydrate, and be back on time'] },
-  { time: '1:55', min: 25, i: '🔄', t: 'Connecting to data II', live: true, b: ['Import vs. DirectQuery: how each works and when to choose each', 'REST APIs and the Web connector', 'Other sources at awareness level: NoSQL, Analysis Services, Dataverse, Dataflows, Fabric'] },
-  { time: '2:20', min: 15, i: '🛠️', t: 'When it goes wrong', live: true, b: ['Troubleshooting data source connections', 'Optimising extraction: load only what you need'] },
-  { time: '2:35', min: 15, i: '🧪', t: 'Hands-on lab', live: true, b: ['Extract data from a source you have not seen', 'Confirm it loaded in Data view (no visuals yet)'] },
-  { time: '2:50', min: 10, i: '🏁', t: 'Checkpoint and wrap-up', b: ['Five quick questions across the lecture', 'Takeaways, scores and homework'], links: [{ t: 'Lecture checkpoint', href: '#/pbi/p5/1', lab: 'pbi', ids: ['p5'] }, { t: 'Wrap-up page', href: '#/wrapup', plain: true }] }
+  { time: '1:55', min: 25, i: '🔄', t: 'Connecting to data II', live: true, b: ['JSON files and REST APIs with the Web connector', 'Import vs. DirectQuery: how each works and when to choose each', 'Other sources at awareness level: NoSQL, Analysis Services, Dataverse, Dataflows, Fabric'], links: [{ t: 'JSON: from list to table', href: '#/dat/d3/1', ids: ['d3'] }, { t: 'Reading an API URL', href: '#/dat/d4/1', ids: ['d4'] }, { t: 'Choose the storage mode', href: '#/dat/d5/1', ids: ['d5'] }] },
+  { time: '2:20', min: 15, i: '🛠️', t: 'When it goes wrong', live: true, b: ['Troubleshooting data source connections', 'Optimising extraction: load only what you need'], links: [{ t: 'Match the error', href: '#/dat/d5/3', ids: ['d5'] }] },
+  { time: '2:35', min: 15, i: '🧪', t: 'Hands-on lab', live: true, b: ['Connect to the CSV, Excel and JSON files and the API', 'Confirm it loaded in Data view (no visuals yet)'], links: [{ t: 'Hands-on lab checklist', href: '#/dat/d6/1', ids: ['d6'] }] },
+  { time: '2:50', min: 10, i: '🏁', t: 'Checkpoint and wrap-up', b: ['Ten quick questions across the lecture', 'Takeaways, scores and homework'], links: [{ t: 'Lecture checkpoint', href: '#/pbi/p5/1', lab: 'pbi', ids: ['p5'] }, { t: 'Wrap-up page', href: '#/wrapup', plain: true }] }
 ];
 function stopLinks(s) {
   if (s.brk) return '<span class="chip dark">Break</span>';
-  if (s.live) return '<span class="chip gold">Live teaching</span> <span class="small muted">Your facilitator leads this part.</span>';
-  return (s.links || []).map(l => {
+  const live = s.live ? '<span class="chip gold">Live teaching</span> ' + (s.links ? '' : '<span class="small muted">Your facilitator leads this part.</span>') : '';
+  return live + (s.links || []).map(l => {
     let chip = '';
     if (l.ids) { const c = countSubmitted(UNITS.filter(x => l.ids.includes(x.id))); chip = `<span class="chip ${c.d === c.n ? 'green' : 'gold'}">${c.d} of ${c.n} submitted</span>`; }
     return `<a class="btn ${l.plain ? '' : 'primary'} sm" href="${l.href}">${esc(l.t)} →</a> ${chip}`;
@@ -873,7 +1089,7 @@ function stopLinks(s) {
 function viewAgenda() {
   const o = overallProgress();
   const stops = AGENDA.map((s, i) => `<li class="tstop"><span class="node ${s.brk ? 'brk' : 'n' + (i % 3)}" aria-hidden="true">${s.i}</span>
-    <div class="card stopcard ${s.live || s.brk ? 'live' : ''}"><div class="stophead"><span class="stopnum">${s.time} · ${s.min} min</span><h3>${esc(s.t)}</h3>${s.live || s.brk || !(s.links || []).some(l => !l.plain) ? '' : '<span class="chip gold">Team activity</span>'}</div>
+    <div class="card stopcard ${s.brk || (s.live && !s.links) ? 'live' : ''}"><div class="stophead"><span class="stopnum">${s.time} · ${s.min} min</span><h3>${esc(s.t)}</h3>${s.brk || !(s.links || []).some(l => !l.plain) ? '' : '<span class="chip gold">Team activity</span>'}</div>
       <ul class="plain">${s.b.map(x => `<li>${esc(x)}</li>`).join('')}</ul><div class="stoplinks">${stopLinks(s)}</div></div></li>`).join('');
   return heroBand('Today’s agenda', `${LECTURE} · 3 hours including a 15-minute break`) + `
   <div class="card progresscard"><div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap">${ringHtml(o.d, o.n)}
@@ -883,7 +1099,7 @@ function viewAgenda() {
   <div class="objgrid">${OBJECTIVES.map((x, i) => `<div class="obj o${i % 3}"><span class="oi" aria-hidden="true">${x.i}</span><h3>${esc(x.t)}</h3><p>${esc(x.d)}</p></div>`).join('')}</div>
   <h2 style="margin-top:30px">The journey</h2>
   <ol class="timeline">${stops}</ol>
-  <div class="card callout"><strong>Tip:</strong> the team activities run in breakout rooms; your facilitator reveals the answers together in the main room. Activities for the live-teaching stops will be added later.</div>`;
+  <div class="card callout"><strong>Tip:</strong> the team activities run in breakout rooms; your facilitator reveals the answers together in the main room. The interface tour, project setup and native SQL queries are taught live, without a team activity.</div>`;
 }
 
 const TAKEAWAYS = [
@@ -891,29 +1107,33 @@ const TAKEAWAYS = [
   { i: '🔁', t: 'BI is the whole workflow', d: 'Collect, clean, organise and visualise data so people can decide: it is more than charts and dashboards.' },
   { i: '🃏', t: 'Five components, in order', d: 'Power Query cleans, the data model organises, DAX calculates, visuals show, and publishing shares.' },
   { i: '🧰', t: 'Three tools, three jobs', d: 'Desktop builds (Windows, one .pbix file), the Service hosts and shares, and the mobile app views.' },
-  { i: '⚖️', t: 'Choose the tool for the need', d: 'Power BI is a strong fit for standard reports, but the right choice depends on the need and the audience.' }];
+  { i: '⚖️', t: 'Choose the tool for the need', d: 'Power BI is a strong fit for standard reports, but the right choice depends on the need and the audience.' },
+  { i: '🧭', t: 'Every connection follows one journey', d: 'Locate the data, choose Get Data and the connector, connect, select what to bring in, then load or transform.' },
+  { i: '🧩', t: 'JSON arrives nested', d: 'A JSON file or API opens as a list of records: convert it to a table, then expand records into columns and lists into rows.' },
+  { i: '⚙️', t: 'Choose the storage mode for the need', d: 'Import keeps a copy in the file, DirectQuery leaves the data at the source, and Dual mixes both, table by table.' }];
 const HOMEWORK = [
   { id: 'h1', t: 'Install Power BI Desktop if you could not in class', d: 'The video says Desktop is Windows-only. Ask your facilitator if you use a Mac.' },
   { id: 'h2', t: 'Explore the Power BI community', d: 'Find forums, webinars or tutorials, and bring back three resources you found useful.' },
   { id: 'h3', t: 'Optional: the Power BI fit check', d: 'Discuss with your team where Power BI is enough and where you would look elsewhere.', href: '#/pbi/p4/1', link: 'Open the fit check' },
-  { id: 'h4', t: 'Watch the course video (self-study)', d: 'What Is Power BI? The Full Story Visually Explained.', href: 'https://www.youtube.com/watch/PDXpM7IvXis', link: 'Open the video ↗', ext: true }];
+  { id: 'h4', t: 'Watch the course video (self-study)', d: 'What Is Power BI? The Full Story Visually Explained.', href: 'https://www.youtube.com/watch/PDXpM7IvXis', link: 'Open the video ↗', ext: true },
+  { id: 'h5', t: 'Homework: connect Power BI to the Meteostat API', d: 'Use what you learned with the countries API. Meteostat’s JSON API needs an API key, according to its developer documentation: check how to get one and how to send it.', href: 'https://dev.meteostat.net/api', link: 'Open the Meteostat API documentation ↗', ext: true }];
 const RESOURCES = [['Self-study video', ['What Is Power BI? The Full Story Visually Explained (#PowerBI Course 1)']]];
 function viewWrap() {
-  const w = W(), o = overallProgress(), t = labTotals('pbi');
+  const w = W(), o = overallProgress(), labs = Object.values(LABS).map(L => ({ L, t: labTotals(L.id) })), tot = labs.reduce((a, x) => ({ got: a.got + x.t.got, max: a.max + x.t.max }), { got: 0, max: 0 });
   const done = HOMEWORK.filter(h => w.checks[h.id]).length, cp = uOf('p5');
   const fac = ui.fac ? `<div class="card callout gold"><h3>Facilitator: closing questions</h3><ul class="plain"><li>Which component do you think takes the most time in a real project?</li><li>Where did your team disagree today, and what settled it?</li><li>What is one thing you will check on your own PC before the next session?</li></ul></div>` : '';
   return heroBand('Wrap-up', 'You made it through the lecture. Here is what to take with you.') + `
   <div class="card progresscard"><div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap">${ringHtml(o.d, o.n)}
     <div style="flex:1;min-width:240px"><h2 style="margin-bottom:4px">${state.team ? esc(state.team) + ': ' : ''}${o.d} of ${o.n} activities submitted</h2><p class="muted" style="margin:0">${o.d < o.n ? 'You can still finish the rest: they stay open on the agenda.' : 'Everything is submitted. Great teamwork!'}</p></div>
     <a class="btn" href="#/agenda">← Back to the agenda</a></div></div>
-  <div class="card callout gold" style="margin-top:18px"><div style="display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap"><span><strong>🧠 Test yourselves: the lecture checkpoint</strong><br><span class="small muted">Five quick questions on what you have learned.</span></span>
+  <div class="card callout gold" style="margin-top:18px"><div style="display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap"><span><strong>🧠 Test yourselves: the lecture checkpoint</strong><br><span class="small muted">Ten quick questions on what you have learned today.</span></span>
     <span style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="chip ${cp.submitted ? 'green' : 'gold'}">${cp.submitted ? 'Submitted' : 'Not submitted yet'}</span><a class="btn primary sm" href="#/pbi/p5/1">${cp.submitted ? 'View it' : 'Start the checkpoint'} →</a></span></div></div>
-  <h2 style="margin-top:26px">Five things to remember</h2>
+  <h2 style="margin-top:26px">Eight things to remember</h2>
   <div class="takegrid">${TAKEAWAYS.map((x, i) => `<div class="take t${i % 3}"><span class="ti" aria-hidden="true">${x.i}</span><h3>${esc(x.t)}</h3><p>${esc(x.d)}</p></div>`).join('')}</div>
   <h2 style="margin-top:30px">Your scoreboard</h2>
-  <div class="card"><table class="tbl" aria-label="Scores by activity"><tbody><tr><td><a href="#/pbi">Power BI Ecosystem Lab</a></td><td class="r">${t.n ? t.got + ' / ' + t.max : '<span class="muted">not revealed yet</span>'}</td></tr>
-    <tr class="total"><td>Total</td><td class="r">${t.max ? t.got + ' / ' + t.max : '—'}</td></tr></tbody></table>
-    <p class="muted small" style="margin:10px 0 0">Scores appear after your facilitator reveals the answers. The fit check is an unscored discussion.</p></div>
+  <div class="card"><table class="tbl" aria-label="Scores by activity"><tbody>${labs.map(({ L, t }) => `<tr><td><a href="${L.hash}">${esc(L.title)}</a></td><td class="r">${t.n ? t.got + ' / ' + t.max : '<span class="muted">not revealed yet</span>'}</td></tr>`).join('')}
+    <tr class="total"><td>Total</td><td class="r">${tot.max ? tot.got + ' / ' + tot.max : '—'}</td></tr></tbody></table>
+    <p class="muted small" style="margin:10px 0 0">Scores appear after your facilitator reveals the answers. The fit check and the hands-on lab are unscored.</p></div>
   <h2 style="margin-top:30px">Before the next session <span class="chip ${done === HOMEWORK.length ? 'green' : 'gold'}" style="vertical-align:4px">${done} of ${HOMEWORK.length} done</span></h2>
   <div class="card"><ul class="checklist">${HOMEWORK.map(h => `<li><label class="chk ${w.checks[h.id] ? 'on' : ''}"><input type="checkbox" data-wf="check" data-id="${h.id}" data-k="hw-${h.id}" ${w.checks[h.id] ? 'checked' : ''}><span><strong>${esc(h.t)}</strong><br><span class="muted small">${esc(h.d)}</span>${h.href ? `<br><a class="small" href="${h.href}" ${h.ext ? 'target="_blank" rel="noopener"' : ''}>${esc(h.link)}</a>` : ''}</span></label></li>`).join('')}</ul>
     ${done === HOMEWORK.length ? '<div class="callout green" style="margin-top:12px"><strong>All set for the next session!</strong></div>' : ''}</div>
@@ -921,14 +1141,14 @@ function viewWrap() {
   <div class="card"><label for="rem" class="tlabel"><strong>One thing I will remember from today</strong></label><textarea id="rem" data-wf="note" data-id="rem" placeholder="…">${esc(w.notes.rem || '')}</textarea>
     <label for="ask" class="tlabel" style="margin-top:14px"><strong>One question I still have</strong></label><textarea id="ask" data-wf="note" data-id="ask" placeholder="…">${esc(w.notes.ask || '')}</textarea></div>
   <h2 style="margin-top:30px">Self-study materials</h2>
-  <div class="card"><p class="muted small">The video behind today’s ecosystem activities. Find the link in the checklist above.</p><div class="reslist">${RESOURCES.map(([g, l]) => `<div><h4>${esc(g)}</h4><ul class="plain">${l.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>`).join('')}</div></div>
+  <div class="card"><p class="muted small">The video behind today’s ecosystem activities. Find the link in the checklist above. The connecting-to-data activities follow the course slides “Extract Data From Different Sources”.</p><div class="reslist">${RESOURCES.map(([g, l]) => `<div><h4>${esc(g)}</h4><ul class="plain">${l.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>`).join('')}</div></div>
   ${fac}
   <div class="stepnav"><a class="btn ghost" href="#/agenda">← Back to the agenda</a><span style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn sm" data-act="wrap-copy" data-k="wrapcopy">Copy my summary</button><a class="btn primary" href="#/">Back to the activities →</a></span></div>`;
 }
 function wrapSummary() {
-  const w = W(), t = labTotals('pbi'), o = overallProgress(), lines = [LECTURE + ' wrap-up' + (state.team ? ' – ' + state.team : '')];
+  const w = W(), o = overallProgress(), lines = [LECTURE + ' wrap-up' + (state.team ? ' – ' + state.team : '')];
   lines.push(`Activities submitted: ${o.d} of ${o.n}`);
-  if (t.n) lines.push(`Power BI Ecosystem Lab: ${t.got}/${t.max}`);
+  Object.values(LABS).forEach(L => { const t = labTotals(L.id); if (t.n) lines.push(`${L.title}: ${t.got}/${t.max}`); });
   lines.push('Homework done: ' + (HOMEWORK.filter(h => w.checks[h.id]).map(h => h.t).join('; ') || 'none yet'));
   if (w.notes.rem) lines.push('I will remember: ' + w.notes.rem);
   if (w.notes.ask) lines.push('My question: ' + w.notes.ask);
@@ -970,7 +1190,7 @@ function render(opts) {
   paintSaved();
 }
 const rerender = () => { const a = document.activeElement; render({ restore: a && a.dataset ? a.dataset.k : null }); };
-window.addEventListener('hashchange', () => { ui.sel = null; render({ nav: true }); });
+window.addEventListener('hashchange', () => { ui.sel = null; ui.mapStop = null; render({ nav: true }); });
 
 /* ==========================================================================
    EVENTS (delegated)
@@ -985,6 +1205,7 @@ function unitChange(el) {
     const arr = u.a[k] || (u.a[k] = []), i = arr.indexOf(el.value), pick = +el.dataset.kpick;
     if (el.checked && i < 0) { if (!pick || arr.length < pick) arr.push(el.value); } else if (!el.checked && i >= 0) arr.splice(i, 1);
   } else if (t === 'grid') { (u.a[k] || (u.a[k] = {}))[el.dataset.ki] = el.value; }
+  else if (t === 'checks') { (u.a[k] || (u.a[k] = {}))[el.dataset.ki] = el.checked; }
   save(); rerender();
 }
 function pbiClick(act, el) {
