@@ -1,2 +1,5 @@
 # Ignore the .venv folders
 .venv/
+
+# Ignore the cache files from Power BI
+*.abf
