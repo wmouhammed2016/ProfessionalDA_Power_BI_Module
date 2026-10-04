@@ -1,0 +1,42 @@
+table DimProductCategory
+	lineageTag: d14a2713-ce16-4c30-b886-007e0b9e4196
+
+	column ProductCategoryKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 9fb6e5f7-aa83-45b6-85af-7fd5cac4c797
+		summarizeBy: none
+		sourceColumn: ProductCategoryKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductCategoryName
+		dataType: string
+		lineageTag: 222860be-b152-4b1b-bcfa-55656fe2154a
+		summarizeBy: none
+		sourceColumn: ProductCategoryName
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductCategoryDescription
+		dataType: string
+		lineageTag: 19edbee5-8920-4e59-a626-8c54a12d217f
+		summarizeBy: none
+		sourceColumn: ProductCategoryDescription
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimProductCategory = m
+		mode: import
+		source =
+				let
+				  Source = Sql.Database("localhost\SQLEXPRESS", "ContosoRetailDW"),
+				  #"Navigation 1" = Source{[Schema = "dbo", Item = "DimProductCategory"]}[Data],
+				    #"Removed Columns" = Table.RemoveColumns(#"Navigation 1",{"ProductCategoryLabel", "ETLLoadID", "LoadDate", "UpdateDate", "DimProductSubcategory", "FactStrategyPlan"})
+				in
+				  #"Removed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

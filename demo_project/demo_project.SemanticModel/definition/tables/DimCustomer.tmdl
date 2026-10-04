@@ -1,0 +1,178 @@
+table DimCustomer
+	lineageTag: caac0ccd-6305-48ad-838a-f3c61c3d27c3
+
+	column CustomerKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 91818293-3e61-4dcc-9ca0-f9bf4c2c7f9f
+		summarizeBy: count
+		sourceColumn: CustomerKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column GeographyKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 555ebc2c-e9c1-4e01-9d3f-c18a2d7a42c6
+		summarizeBy: none
+		sourceColumn: GeographyKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerFullName
+		dataType: string
+		lineageTag: e7e98e00-b295-4ebc-a204-5eb2b46c451e
+		summarizeBy: none
+		sourceColumn: CustomerFullName
+
+		annotation SummarizationSetBy = Automatic
+
+	column BirthDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: be226cf3-3736-4a53-8a51-8e1c6d97f904
+		summarizeBy: none
+		sourceColumn: BirthDate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column MaritalStatus
+		dataType: string
+		lineageTag: ba24199a-935f-4cac-b9c2-700308bf9ce8
+		summarizeBy: none
+		sourceColumn: MaritalStatus
+
+		annotation SummarizationSetBy = Automatic
+
+	column Gender
+		dataType: string
+		lineageTag: f5c1a6ab-c463-4db0-b5de-76b99c7ba517
+		summarizeBy: none
+		sourceColumn: Gender
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmailAddress
+		dataType: string
+		lineageTag: 868f862a-d885-418a-b442-d98922df6c60
+		summarizeBy: none
+		sourceColumn: EmailAddress
+
+		annotation SummarizationSetBy = Automatic
+
+	column YearlyIncome
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 5e61cb09-5983-4602-be2b-f218cdccd166
+		summarizeBy: sum
+		sourceColumn: YearlyIncome
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column TotalChildren
+		dataType: int64
+		formatString: 0
+		lineageTag: 6e4a9dc3-e1a4-4f9b-a40f-621403df6c2d
+		summarizeBy: sum
+		sourceColumn: TotalChildren
+
+		annotation SummarizationSetBy = Automatic
+
+	column NumberChildrenAtHome
+		dataType: int64
+		formatString: 0
+		lineageTag: 08f8ded6-f877-494c-9cbb-63271c524eb8
+		summarizeBy: sum
+		sourceColumn: NumberChildrenAtHome
+
+		annotation SummarizationSetBy = Automatic
+
+	column Education
+		dataType: string
+		lineageTag: 3ba94922-a73f-4539-9172-1c8ce06fef56
+		summarizeBy: none
+		sourceColumn: Education
+
+		annotation SummarizationSetBy = Automatic
+
+	column Occupation
+		dataType: string
+		lineageTag: adf59ead-1666-4d85-8a9d-15af53273f28
+		summarizeBy: none
+		sourceColumn: Occupation
+
+		annotation SummarizationSetBy = Automatic
+
+	column HouseOwner
+		dataType: string
+		lineageTag: 6bc98bd8-4d2d-411d-ab47-7197cd8acc02
+		summarizeBy: none
+		sourceColumn: HouseOwner
+
+		annotation SummarizationSetBy = Automatic
+
+	column NumberCarsOwned
+		dataType: int64
+		formatString: 0
+		lineageTag: aac71363-536b-4b58-81c7-ac2b982cf339
+		summarizeBy: sum
+		sourceColumn: NumberCarsOwned
+
+		annotation SummarizationSetBy = Automatic
+
+	column DateFirstPurchase
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: d719dac2-446f-4c75-b2c2-95b85c853caa
+		summarizeBy: none
+		sourceColumn: DateFirstPurchase
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column CustomerType
+		dataType: string
+		lineageTag: c3998b13-9541-4e8c-be79-a843801d635d
+		summarizeBy: none
+		sourceColumn: CustomerType
+
+		annotation SummarizationSetBy = Automatic
+
+	column CompanyName
+		dataType: string
+		lineageTag: 3a4604b4-a373-471e-91ae-c13ad942689b
+		summarizeBy: none
+		sourceColumn: CompanyName
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimCustomer = m
+		mode: import
+		source =
+				let
+				  Source = Sql.Database("localhost\SQLEXPRESS", "ContosoRetailDW"),
+				  #"Navigation 1" = Source{[Schema = "dbo", Item = "DimCustomer"]}[Data],
+				    #"Removed Columns" = Table.RemoveColumns(#"Navigation 1",{"ETLLoadID", "LoadDate", "UpdateDate", "DimGeography", "FactOnlineSales", "CustomerLabel", "Title"}),
+				    #"Merged Columns" = Table.CombineColumns(#"Removed Columns",{"FirstName", "MiddleName", "LastName"},Combiner.CombineTextByDelimiter(" ", QuoteStyle.None),"CustomerFullName"),
+				    #"Removed Columns1" = Table.RemoveColumns(#"Merged Columns",{"NameStyle"}),
+				    #"Replaced Value" = Table.ReplaceValue(#"Removed Columns1","M","Married",Replacer.ReplaceText,{"MaritalStatus"}),
+				    #"Replaced Value1" = Table.ReplaceValue(#"Replaced Value","S","Single",Replacer.ReplaceText,{"MaritalStatus"}),
+				    #"Removed Columns2" = Table.RemoveColumns(#"Replaced Value1",{"Suffix"}),
+				    #"Replaced Value2" = Table.ReplaceValue(#"Removed Columns2","M","Male",Replacer.ReplaceText,{"Gender"}),
+				    #"Replaced Value3" = Table.ReplaceValue(#"Replaced Value2","F","Female",Replacer.ReplaceText,{"Gender"}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Replaced Value3",{{"HouseOwnerFlag", "HouseOwner"}}),
+				    #"Replaced Value4" = Table.ReplaceValue(#"Renamed Columns","1","YES",Replacer.ReplaceText,{"HouseOwner"}),
+				    #"Replaced Value5" = Table.ReplaceValue(#"Replaced Value4","0","NO",Replacer.ReplaceText,{"HouseOwner"}),
+				    #"Removed Columns3" = Table.RemoveColumns(#"Replaced Value5",{"AddressLine1", "AddressLine2", "Phone"})
+				in
+				  #"Removed Columns3"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

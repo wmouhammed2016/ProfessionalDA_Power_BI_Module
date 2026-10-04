@@ -1,0 +1,24 @@
+relationship ef6a7101-ef90-449d-9c98-6b9a2250cf57
+	fromColumn: DimCustomer.GeographyKey
+	toColumn: DimGeography.GeographyKey
+
+	annotation PBI_IsFromSource = FS
+
+relationship f87205ef-e8ee-43c5-b3c6-b8c83493184d
+	fromColumn: DimProduct.ProductSubcategoryKey
+	toColumn: DimProductSubcategory.ProductSubcategoryKey
+
+	annotation PBI_IsFromSource = FS
+
+relationship 84a28d8d-9dd7-411f-b4d2-46c3315b8c07
+	fromColumn: DimStore.GeographyKey
+	toColumn: DimGeography.GeographyKey
+
+	annotation PBI_IsFromSource = FS
+
+relationship 44b6ee49-86ca-4f79-adb8-020724bd8362
+	fromColumn: DimProductSubcategory.ProductCategoryKey
+	toColumn: DimProductCategory.ProductCategoryKey
+
+	annotation PBI_IsFromSource = FS
+

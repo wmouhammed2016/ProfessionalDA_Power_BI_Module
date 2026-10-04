@@ -1,0 +1,235 @@
+table FactOnlineSales2008
+	lineageTag: bb101d4d-66f3-410b-8c34-ef6c4666ad9d
+
+	column OnlineSalesKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 577db972-2993-4779-a3de-5b01f52f99c3
+		summarizeBy: count
+		sourceColumn: OnlineSalesKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column DateKey
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 3a8e81a9-d5ef-4a73-949d-405762b00542
+		summarizeBy: none
+		sourceColumn: DateKey
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column StoreKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 4468f8e1-0416-43bc-8524-a9acb7f6d9a3
+		summarizeBy: count
+		sourceColumn: StoreKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 0b859b8f-dd1b-4994-b3fd-79dfcc57a68c
+		summarizeBy: count
+		sourceColumn: ProductKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column PromotionKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 84d5cc36-f7b2-486c-9a14-23f3f99c2b0e
+		summarizeBy: count
+		sourceColumn: PromotionKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column CurrencyKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 95f82f3c-97c1-449e-b4e6-74b2f520a458
+		summarizeBy: count
+		sourceColumn: CurrencyKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 94023149-83de-456c-b819-0c7b0687fd11
+		summarizeBy: count
+		sourceColumn: CustomerKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column SalesOrderNumber
+		dataType: string
+		lineageTag: 12d1f3ae-500d-4ba4-8636-9fd15940b738
+		summarizeBy: none
+		sourceColumn: SalesOrderNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column SalesOrderLineNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: 6e0681af-2aae-41cb-82f7-09d1a8b4b49a
+		summarizeBy: sum
+		sourceColumn: SalesOrderLineNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column SalesQuantity
+		dataType: int64
+		formatString: 0
+		lineageTag: 7414cc9b-5dba-4316-a62f-00fb92763d32
+		summarizeBy: sum
+		sourceColumn: SalesQuantity
+
+		annotation SummarizationSetBy = Automatic
+
+	column SalesAmount
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 0e3062a7-3905-4712-a17e-7ff2f4c21b7c
+		summarizeBy: sum
+		sourceColumn: SalesAmount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column ReturnQuantity
+		dataType: int64
+		formatString: 0
+		lineageTag: 9c652e20-c636-48e1-9737-90351deb1e4f
+		summarizeBy: sum
+		sourceColumn: ReturnQuantity
+
+		annotation SummarizationSetBy = Automatic
+
+	column ReturnAmount
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 3b1ecd99-476b-4cb7-a5f0-15cd9f478a5c
+		summarizeBy: sum
+		sourceColumn: ReturnAmount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column DiscountQuantity
+		dataType: int64
+		formatString: 0
+		lineageTag: f196a1ac-757f-455f-a9ee-bdb0dd823a20
+		summarizeBy: sum
+		sourceColumn: DiscountQuantity
+
+		annotation SummarizationSetBy = Automatic
+
+	column DiscountAmount
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 249e86d7-21bf-4c1e-aa6f-ac3f7259c8ad
+		summarizeBy: sum
+		sourceColumn: DiscountAmount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column TotalCost
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 0fe4abdd-4be8-46ef-9425-1024b77488ea
+		summarizeBy: sum
+		sourceColumn: TotalCost
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column UnitCost
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 55c3ffdd-09c5-4b46-9a25-98cbc4e6dcb6
+		summarizeBy: sum
+		sourceColumn: UnitCost
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column UnitPrice
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 9dcc82f8-530c-4a51-8c76-9a2c6fc8581c
+		summarizeBy: sum
+		sourceColumn: UnitPrice
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column ZeroSales
+		dataType: string
+		lineageTag: c58f1136-f645-40a4-b9d1-418e32ff97e8
+		summarizeBy: none
+		sourceColumn: ZeroSales
+
+		annotation SummarizationSetBy = Automatic
+
+	column ReturnedSales
+		dataType: string
+		lineageTag: 39635899-ce3f-4fc3-b130-3481a61f7178
+		summarizeBy: none
+		sourceColumn: ReturnedSales
+
+		annotation SummarizationSetBy = Automatic
+
+	column DiscountedOrder
+		dataType: string
+		lineageTag: 9a9bd9c7-878a-44b6-bf8e-7ee7116c7d3f
+		summarizeBy: none
+		sourceColumn: DiscountedOrder
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactOnlineSales2008 = m
+		mode: import
+		source = ```
+				let
+				  Source = Sql.Database(
+				    "localhost\SQLEXPRESS", 
+				    "ContosoRetailDW", 
+				    [Query = "select * from dbo.FactOnlineSales where year(DateKey) = 2008;"]
+				  ), 
+				  ChangedType = Table.TransformColumnTypes(
+				    Source, 
+				    {
+				      {"DateKey", type date}, 
+				      {"SalesAmount", Currency.Type}, 
+				      {"ReturnAmount", Currency.Type}, 
+				      {"DiscountAmount", Currency.Type}, 
+				      {"TotalCost", Currency.Type}, 
+				      {"UnitCost", Currency.Type}, 
+				      {"UnitPrice", Currency.Type}
+				    }
+				  ), 
+				  RemovedETLColumns = Table.RemoveColumns(ChangedType, {"ETLLoadID", "LoadDate", "UpdateDate"}),
+				    AddedZeroSales = Table.AddColumn(RemovedETLColumns, "ZeroSales", each if [SalesQuantity] = 0 then "YES" else "NO"),
+				    AddedReturnedSales = Table.AddColumn(AddedZeroSales, "ReturnedSales", each if [ReturnQuantity] >= 1 then "YES" else "NO"),
+				    AddedDiscountedOrders = Table.AddColumn(AddedReturnedSales, "DiscountedOrder", each if [DiscountQuantity] >= 1 then "YES" else "NO")
+				in
+				  AddedDiscountedOrders
+				```
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

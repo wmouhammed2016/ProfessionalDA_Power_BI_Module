@@ -1,0 +1,1 @@
+select * from dbo.FactOnlineSales where year(DateKey) = 2008;

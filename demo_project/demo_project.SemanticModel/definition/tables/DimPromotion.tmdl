@@ -1,0 +1,104 @@
+table DimPromotion
+	lineageTag: ae04a67f-bd06-49ed-a085-5fde61630b6a
+
+	column PromotionKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 8bfcf4a8-4b96-4a92-b810-484732c0aa98
+		summarizeBy: count
+		sourceColumn: PromotionKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column PromotionName
+		dataType: string
+		lineageTag: 3f3cfc1f-9477-4d3a-9e50-166e57f306b3
+		summarizeBy: none
+		sourceColumn: PromotionName
+
+		annotation SummarizationSetBy = Automatic
+
+	column PromotionDescription
+		dataType: string
+		lineageTag: 019184fc-d47b-4551-9a60-3e57cae70c3f
+		summarizeBy: none
+		sourceColumn: PromotionDescription
+
+		annotation SummarizationSetBy = Automatic
+
+	column DiscountPercent
+		dataType: double
+		lineageTag: d5d1a7ed-24db-48b5-813e-98b3671eedcb
+		summarizeBy: sum
+		sourceColumn: DiscountPercent
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column PromotionType
+		dataType: string
+		lineageTag: 66281774-f336-4c2e-baf3-ca23618316c5
+		summarizeBy: none
+		sourceColumn: PromotionType
+
+		annotation SummarizationSetBy = Automatic
+
+	column PromotionCategory
+		dataType: string
+		lineageTag: 94f3b977-c81d-4551-aad9-e83e3810afdf
+		summarizeBy: none
+		sourceColumn: PromotionCategory
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: a11203eb-415d-4388-8da6-05a1cb0f57cf
+		summarizeBy: none
+		sourceColumn: StartDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column EndDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 6343a90e-85bf-4e5e-81ad-8fe1366227f4
+		summarizeBy: none
+		sourceColumn: EndDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column MinQuantity
+		dataType: int64
+		formatString: 0
+		lineageTag: 2c1d4edb-b91f-4c66-8fbc-9e64dd0d15ec
+		summarizeBy: sum
+		sourceColumn: MinQuantity
+
+		annotation SummarizationSetBy = Automatic
+
+	column MaxQuantity
+		dataType: int64
+		formatString: 0
+		lineageTag: 9aec154d-dfa4-40b6-a81d-33d6df11f698
+		summarizeBy: sum
+		sourceColumn: MaxQuantity
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimPromotion = m
+		mode: import
+		source =
+				let
+				  Source = Sql.Database("localhost\SQLEXPRESS", "ContosoRetailDW"),
+				  #"Navigation 1" = Source{[Schema = "dbo", Item = "DimPromotion"]}[Data],
+				    #"Removed Columns" = Table.RemoveColumns(#"Navigation 1",{"PromotionLabel", "ETLLoadID", "LoadDate", "UpdateDate", "FactOnlineSales", "FactSales"})
+				in
+				  #"Removed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

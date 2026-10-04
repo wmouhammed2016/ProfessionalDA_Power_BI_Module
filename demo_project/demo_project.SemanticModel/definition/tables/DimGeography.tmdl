@@ -1,0 +1,74 @@
+table DimGeography
+	lineageTag: 18ed9e3d-7e3f-4f8d-90c0-c80b16d9666d
+
+	column GeographyKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 82731bbe-6184-431c-bf1a-8842da19b190
+		summarizeBy: none
+		sourceColumn: GeographyKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column GeographyType
+		dataType: string
+		lineageTag: ef40093c-c864-4be8-ab21-e5817e75f6a0
+		summarizeBy: none
+		sourceColumn: GeographyType
+
+		annotation SummarizationSetBy = Automatic
+
+	column ContinentName
+		dataType: string
+		lineageTag: b3683e49-0250-49fd-a260-d9ebbb397e21
+		summarizeBy: none
+		sourceColumn: ContinentName
+
+		annotation SummarizationSetBy = Automatic
+
+	column CityName
+		dataType: string
+		lineageTag: 8cb0050f-e2fa-4efc-92d9-6a6da4e6d03d
+		summarizeBy: none
+		sourceColumn: CityName
+
+		annotation SummarizationSetBy = Automatic
+
+	column StateProvinceName
+		dataType: string
+		lineageTag: 40a0380c-2924-45e9-aa7e-6e9e124ea0da
+		summarizeBy: none
+		sourceColumn: StateProvinceName
+
+		annotation SummarizationSetBy = Automatic
+
+	column RegionCountryName
+		dataType: string
+		lineageTag: 2041f5b1-1416-45b4-add4-445574643985
+		summarizeBy: none
+		sourceColumn: RegionCountryName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Geometry
+		dataType: string
+		lineageTag: bbade8c8-208b-44cc-9e12-db35b19549a2
+		summarizeBy: none
+		sourceColumn: Geometry
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimGeography = m
+		mode: import
+		source =
+				let
+				  Source = Sql.Database("localhost\SQLEXPRESS", "ContosoRetailDW"),
+				  #"Navigation 1" = Source{[Schema = "dbo", Item = "DimGeography"]}[Data],
+				    #"Removed Columns" = Table.RemoveColumns(#"Navigation 1",{"ETLLoadID", "LoadDate", "UpdateDate", "DimCustomer", "DimSalesTerritory", "DimStore"})
+				in
+				  #"Removed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

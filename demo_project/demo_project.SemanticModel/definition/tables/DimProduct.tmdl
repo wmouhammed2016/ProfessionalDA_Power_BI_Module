@@ -1,0 +1,139 @@
+table DimProduct
+	lineageTag: 65064618-d0ab-4da0-8374-76b206a4c9b4
+
+	column ProductKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 9701ad67-4d00-41c2-b7f6-1230e8aefbf1
+		summarizeBy: count
+		sourceColumn: ProductKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductName
+		dataType: string
+		lineageTag: 81d0538d-e16d-4df8-bbea-8580b8dd1ff7
+		summarizeBy: none
+		sourceColumn: ProductName
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductDescription
+		dataType: string
+		lineageTag: f78d5aa1-030a-45d6-ba0f-f93f0c37748a
+		summarizeBy: none
+		sourceColumn: ProductDescription
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductSubcategoryKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 5dd7a06b-c207-4e65-a6d5-14b9e75c2e88
+		summarizeBy: none
+		sourceColumn: ProductSubcategoryKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column Manufacturer
+		dataType: string
+		lineageTag: 9a976bbf-0626-4ff0-82ce-4cc499c07dbf
+		summarizeBy: none
+		sourceColumn: Manufacturer
+
+		annotation SummarizationSetBy = Automatic
+
+	column BrandName
+		dataType: string
+		lineageTag: 2c262377-d515-4252-b88c-532fbd57085a
+		summarizeBy: none
+		sourceColumn: BrandName
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClassName
+		dataType: string
+		lineageTag: fb46e347-01e1-47a3-9408-f8c6994c06f3
+		summarizeBy: none
+		sourceColumn: ClassName
+
+		annotation SummarizationSetBy = Automatic
+
+	column StyleName
+		dataType: string
+		lineageTag: 61dcebd7-a89d-4fc4-8c67-9d5085d9164d
+		summarizeBy: none
+		sourceColumn: StyleName
+
+		annotation SummarizationSetBy = Automatic
+
+	column ColorName
+		dataType: string
+		lineageTag: 6c86e318-cdad-4c07-97f7-8a2de03d969c
+		summarizeBy: none
+		sourceColumn: ColorName
+
+		annotation SummarizationSetBy = Automatic
+
+	column UnitCost
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 51d6ce8e-16a4-41d0-b102-1010fde40404
+		summarizeBy: sum
+		sourceColumn: UnitCost
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column UnitPrice
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 0e50918a-4a4f-4908-b067-70e8a1d67c72
+		summarizeBy: sum
+		sourceColumn: UnitPrice
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column AvailableForSaleDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: b60c02d8-4119-44f9-b326-d49b14c8dae3
+		summarizeBy: none
+		sourceColumn: AvailableForSaleDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column StopSaleDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: afd88b56-304d-4f4c-b696-4832cd0c985d
+		summarizeBy: none
+		sourceColumn: StopSaleDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status
+		dataType: string
+		lineageTag: 4772bb2c-0230-4e5a-83e5-249d3c6b843a
+		summarizeBy: none
+		sourceColumn: Status
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimProduct = m
+		mode: import
+		source =
+				let
+				  Source = Sql.Database("localhost\SQLEXPRESS", "ContosoRetailDW"),
+				  #"Navigation 1" = Source{[Schema = "dbo", Item = "DimProduct"]}[Data],
+				    #"Removed Columns" = Table.RemoveColumns(#"Navigation 1",{"ProductLabel", "ClassID", "StyleID", "ColorID", "Size", "SizeRange", "SizeUnitMeasureID", "Weight", "WeightUnitMeasureID", "UnitOfMeasureID", "UnitOfMeasureName", "StockTypeID", "StockTypeName", "ImageURL", "ProductURL", "ETLLoadID", "LoadDate", "UpdateDate", "DimProductSubcategory", "FactInventory", "FactOnlineSales", "FactSales", "FactSalesQuota"})
+				in
+				  #"Removed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
