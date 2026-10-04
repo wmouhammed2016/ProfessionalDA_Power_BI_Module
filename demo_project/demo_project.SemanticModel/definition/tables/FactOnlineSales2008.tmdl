@@ -25,7 +25,7 @@ table FactOnlineSales2008
 		dataType: int64
 		formatString: 0
 		lineageTag: 4468f8e1-0416-43bc-8524-a9acb7f6d9a3
-		summarizeBy: count
+		summarizeBy: none
 		sourceColumn: StoreKey
 
 		annotation SummarizationSetBy = Automatic
@@ -34,7 +34,7 @@ table FactOnlineSales2008
 		dataType: int64
 		formatString: 0
 		lineageTag: 0b859b8f-dd1b-4994-b3fd-79dfcc57a68c
-		summarizeBy: count
+		summarizeBy: none
 		sourceColumn: ProductKey
 
 		annotation SummarizationSetBy = Automatic
@@ -43,7 +43,7 @@ table FactOnlineSales2008
 		dataType: int64
 		formatString: 0
 		lineageTag: 84d5cc36-f7b2-486c-9a14-23f3f99c2b0e
-		summarizeBy: count
+		summarizeBy: none
 		sourceColumn: PromotionKey
 
 		annotation SummarizationSetBy = Automatic
@@ -52,7 +52,7 @@ table FactOnlineSales2008
 		dataType: int64
 		formatString: 0
 		lineageTag: 95f82f3c-97c1-449e-b4e6-74b2f520a458
-		summarizeBy: count
+		summarizeBy: none
 		sourceColumn: CurrencyKey
 
 		annotation SummarizationSetBy = Automatic
@@ -61,7 +61,7 @@ table FactOnlineSales2008
 		dataType: int64
 		formatString: 0
 		lineageTag: 94023149-83de-456c-b819-0c7b0687fd11
-		summarizeBy: count
+		summarizeBy: none
 		sourceColumn: CustomerKey
 
 		annotation SummarizationSetBy = Automatic

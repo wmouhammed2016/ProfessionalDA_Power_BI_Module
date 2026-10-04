@@ -5,7 +5,8 @@ table DimProduct
 		dataType: int64
 		formatString: 0
 		lineageTag: 9701ad67-4d00-41c2-b7f6-1230e8aefbf1
-		summarizeBy: count
+		isDefaultLabel
+		summarizeBy: none
 		sourceColumn: ProductKey
 
 		annotation SummarizationSetBy = Automatic

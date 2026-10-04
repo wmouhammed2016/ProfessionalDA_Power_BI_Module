@@ -1,8 +1,10 @@
 table DimDate
 	lineageTag: 63feb4ad-4888-41c7-9283-f5010f0d3014
+	dataCategory: Time
 
 	column Datekey
 		dataType: dateTime
+		isKey
 		formatString: Long Date
 		lineageTag: beb8e07c-7b15-4525-bf7b-113090779aab
 		summarizeBy: none
@@ -16,7 +18,7 @@ table DimDate
 		dataType: int64
 		formatString: 0
 		lineageTag: 104058ef-da88-49e3-8c29-4dd5007aa9b3
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: CalendarYear
 
 		annotation SummarizationSetBy = Automatic
@@ -33,7 +35,7 @@ table DimDate
 		dataType: int64
 		formatString: 0
 		lineageTag: 8b300b59-5845-4a8b-8ca2-d2fad1ceaf73
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: CalendarHalfYear
 
 		annotation SummarizationSetBy = Automatic
@@ -50,7 +52,7 @@ table DimDate
 		dataType: int64
 		formatString: 0
 		lineageTag: 9d625029-f5dd-4e47-9fa0-752e1d11cc18
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: CalendarQuarter
 
 		annotation SummarizationSetBy = Automatic
@@ -67,7 +69,7 @@ table DimDate
 		dataType: int64
 		formatString: 0
 		lineageTag: 68be22a8-c5e1-4075-be18-1271d0c279cc
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: CalendarMonth
 
 		annotation SummarizationSetBy = Automatic
@@ -84,7 +86,7 @@ table DimDate
 		dataType: int64
 		formatString: 0
 		lineageTag: 7e2936c8-651d-4c8c-a432-fa18c4939024
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: CalendarWeek
 
 		annotation SummarizationSetBy = Automatic
@@ -101,7 +103,7 @@ table DimDate
 		dataType: int64
 		formatString: 0
 		lineageTag: b341ecb0-9d5e-4f30-9082-8d4bcd3e6481
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: CalendarDayOfWeek
 
 		annotation SummarizationSetBy = Automatic
@@ -118,7 +120,7 @@ table DimDate
 		dataType: int64
 		formatString: 0
 		lineageTag: f956114f-795e-40c6-94dd-3bb28e25312d
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: FiscalYear
 
 		annotation SummarizationSetBy = Automatic
@@ -135,7 +137,7 @@ table DimDate
 		dataType: int64
 		formatString: 0
 		lineageTag: b127d833-54bf-4370-a577-f49143ce6185
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: FiscalHalfYear
 
 		annotation SummarizationSetBy = Automatic
@@ -152,7 +154,7 @@ table DimDate
 		dataType: int64
 		formatString: 0
 		lineageTag: f210dee0-49c9-457f-a6ee-712895d6dd2a
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: FiscalQuarter
 
 		annotation SummarizationSetBy = Automatic
@@ -169,7 +171,7 @@ table DimDate
 		dataType: int64
 		formatString: 0
 		lineageTag: e3a589e4-d266-4460-9819-828f48d9fd9c
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: FiscalMonth
 
 		annotation SummarizationSetBy = Automatic
@@ -194,7 +196,7 @@ table DimDate
 		dataType: int64
 		formatString: 0
 		lineageTag: 88d4ca62-2c0c-4aae-a6f0-55fbc7bd7ca0
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: IsHoliday
 
 		annotation SummarizationSetBy = Automatic

@@ -10,7 +10,7 @@ annotation __PBI_TimeIntelligenceEnabled = 0
 
 annotation PBI_ProTooling = ["DevMode"]
 
-annotation PBI_QueryOrder = ["FactOnlineSales2008","DimCurrency","DimCustomer","DimDate","DimProduct","DimPromotion","DimStore","DimGeography","DimProductCategory","DimProductSubcategory"]
+annotation PBI_QueryOrder = ["FactOnlineSales2008","DimCurrency","DimCustomer","DimDate","DimProduct","DimPromotion","DimStore","DimProductCategory","DimProductSubcategory"]
 
 ref table FactOnlineSales2008
 ref table DimCurrency
@@ -19,7 +19,6 @@ ref table DimDate
 ref table DimProduct
 ref table DimPromotion
 ref table DimStore
-ref table DimGeography
 ref table DimProductCategory
 ref table DimProductSubcategory
 

@@ -1,0 +1,121 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "60f6ac3dd1868048f1dd",
+  "position": {
+    "x": 84,
+    "y": 31.2,
+    "z": 0,
+    "height": 777.59999999999991,
+    "width": 1437.6
+  },
+  "visual": {
+    "visualType": "barChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimProductCategory"
+                    }
+                  },
+                  "Property": "ProductCategoryName"
+                }
+              },
+              "queryRef": "DimProductCategory.ProductCategoryName",
+              "nativeQueryRef": "ProductCategoryName",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactOnlineSales2008"
+                        }
+                      },
+                      "Property": "SalesQuantity"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(FactOnlineSales2008.SalesQuantity)",
+              "nativeQueryRef": "Sum of SalesQuantity"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Aggregation": {
+                "Expression": {
+                  "Column": {
+                    "Expression": {
+                      "SourceRef": {
+                        "Entity": "FactOnlineSales2008"
+                      }
+                    },
+                    "Property": "SalesQuantity"
+                  }
+                },
+                "Function": 0
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "1cf00bcf3e41db18311b",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimProductCategory"
+              }
+            },
+            "Property": "ProductCategoryName"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "26d1b847cd2dca225a5c",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactOnlineSales2008"
+                  }
+                },
+                "Property": "SalesQuantity"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

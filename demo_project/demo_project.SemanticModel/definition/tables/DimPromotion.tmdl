@@ -5,7 +5,8 @@ table DimPromotion
 		dataType: int64
 		formatString: 0
 		lineageTag: 8bfcf4a8-4b96-4a92-b810-484732c0aa98
-		summarizeBy: count
+		isDefaultLabel
+		summarizeBy: none
 		sourceColumn: PromotionKey
 
 		annotation SummarizationSetBy = Automatic
@@ -29,7 +30,7 @@ table DimPromotion
 	column DiscountPercent
 		dataType: double
 		lineageTag: d5d1a7ed-24db-48b5-813e-98b3671eedcb
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: DiscountPercent
 
 		annotation SummarizationSetBy = Automatic
@@ -74,7 +75,7 @@ table DimPromotion
 		dataType: int64
 		formatString: 0
 		lineageTag: 2c1d4edb-b91f-4c66-8fbc-9e64dd0d15ec
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: MinQuantity
 
 		annotation SummarizationSetBy = Automatic
@@ -83,7 +84,7 @@ table DimPromotion
 		dataType: int64
 		formatString: 0
 		lineageTag: 9aec154d-dfa4-40b6-a81d-33d6df11f698
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: MaxQuantity
 
 		annotation SummarizationSetBy = Automatic

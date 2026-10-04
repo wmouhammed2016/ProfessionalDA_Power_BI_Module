@@ -5,7 +5,8 @@ table DimCurrency
 		dataType: int64
 		formatString: 0
 		lineageTag: f2237b0d-c78c-4d46-96db-29e5045b1a9c
-		summarizeBy: count
+		isDefaultLabel
+		summarizeBy: none
 		sourceColumn: CurrencyKey
 
 		annotation SummarizationSetBy = Automatic
